@@ -25,7 +25,7 @@ class Case(object):
         
 
             
-    def est_adjacente(self,carte):
+    def adjacence(self,carte):
         adjacentes=[]
         for i in range(self.x-1,self.x+2):
             for j in range(self.y-1,self.y+2):
@@ -41,7 +41,7 @@ class Case(object):
         état=self.etat
         charbon=self.carbo
         brulables=[]
-        adj=self.est_adjacente()
+        adj=self.adjacence()
         for i in range(len(adj)):
             case_adj=adj[i]
             if case_adj.nat==1 or case_adj.nat==2 or case_adj.nat==3:
