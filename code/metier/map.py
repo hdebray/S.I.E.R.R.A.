@@ -6,6 +6,7 @@ Created on Mon Mar 28 11:49:48 2016
 """
 
 import numpy as np
+import random as rnd
 import matplotlib.pyplot as plt
 import matplotlib.colors as col
 import matplotlib.cm as cm
@@ -57,59 +58,71 @@ cm.register_cmap(cmap=sim_color)
 Création d'une carte en combinant deux cartes de hauteur (heightmap), 
 générées par un bruit de valeur (Value Noise)
 """
-class Map(object):
-    def __init__(self,size):
-        self.size = size
+class Carte(object):
+    def __init__(self,taille):
+        self.taille = taille
+        self.carte = np.zeros([taille,taille])
+        self.liste_case = []
+        self.liste_brule = []
+        self.liste_pompier = []
+        self.iter = 0
         
-    def terraform(self):
-        """Combine deux heightmap, puis construit la carte qui en dépend"""
-        earth = np.zeros([self.size,self.size])
-        height = self.heightmap()
-        forest = self.heightmap()
-        for i in range(self.size):
-            for j in range(self.size):
-                earth[i,j] = self.biome(height,forest,i,j)
-        return earth
+    def creation(self,foyer=-1):
+        """Combine deux heightmap (altitude et humidité), puis construit la carte qui en dépend"""
+        alti = self.heightmap()
+        foret = self.heightmap()
+        for i in range(self.taille):
+            for j in range(self.taille):
+                self.carte[i,j] = self.biome(alti,foret,i,j)        #créé la carte
+        
+        
+        if(foyer < 0): foyer = int(self.taille/10)
+        self.johny(foyer)
+        self.creer_pomp(n)
                 
-    def biome(self,height,forest,i,j):
+    def biome(self,alti,foret,i,j):
         """Construit la carte en combinant les valeurs des deux heightmap"""
-        value = 0
-        if(height[i,j] < 0.4): value = 0        #eau
-        elif(height[i,j] > 0.6 and forest[i,j] > 0.5): value = 2        #foret
-        elif(height[i,j] > 0.7 and forest[i,j] < 0.4): value = 3        #ville
-        else: value = 1         #plaine
-        return value
-                
+        n = 0
+        if(alti[i,j] < 0.4):        #eau
+            n = 0
+            #self.liste_case.append(Case(j,i,0))
+        elif(alti[i,j] > 0.6 and foret[i,j] > 0.5):     #foret
+            n = 2
+            #self.liste_case.append(Case(j,i,2))
+        elif(alti[i,j] > 0.7 and foret[i,j] < 0.4):     #maison
+            n = 3
+            #self.liste_case.append(Case(j,i,3))
+        else:               #plaine
+            n = 1
+            #self.liste_case.append(Case(j,i,1))
+        return n
         
-    def heightmap(self,scale=1,freq=1/2.0):
+    def heightmap(self,amp=1,freq=1/2.0):
         """Construit une heightmap en ajoutant successivement des bruits de valeurs,
         à des amplitudes et des fréquences différentes"""
-        noise = np.zeros([self.size,self.size])     #initialisation
-        while(self.size*freq > 1 and scale > 0.01):     #tant que la résolution de la carte est supérieur à 1
-            noise += self.calc_noise(self.size*freq) * scale
+        bruit = np.zeros([self.taille,self.taille])     #initialisation
+        while(self.taille*freq > 1 and amp > 0.01):     #tant que la résolution de la carte est supérieur à 1
+            bruit += self.calc_bruit(self.taille*freq) * amp
             freq *= 0.4     #augmentation de la fréquence
-            scale *= 0.6    #diminution de l'amplitude
-        noise = self.norm(noise)
-        return noise
+            amp *= 0.6    #diminution de l'amplitude
+        bruit = self.distrib(bruit)
+        return bruit
         
-    def calc_noise(self,res):
+    def calc_bruit(self,res):
         """Calcul un bruit de valeur pour une résolution données (taille*fréquence).
         La graine utilisé pour générer le bruit blanc de départ est différente à chaque fois"""
-        seed = np.random.permutation(256)           #table de permutation aléatoire (graine du monde)
-        self.white = self.white_noise(self.size,seed)                #bruit blanc
-        temp = self.interpol(res)         #interpolation du bruit blanc en fonction de la résolution
+        perm = np.random.permutation(256)           #table de permutation aléatoire (graine du monde)
+        self.blanc = self.bruit_blanc(self.taille,perm)                #bruit blanc
+        
+        temp = np.zeros([self.taille,self.taille])
+        for i in range(self.taille):
+            for j in range(self.taille):
+                m,n = int(i/res),int(j/res)
+                temp[i][j] = self.lissage(i/res,j/res)      #interpolation lissée du bruit blanc
+                
         return temp
         
-    def interpol(self,res):
-        """Interpolation du bruit blanc pour générer le bruit de valeur"""
-        result = np.zeros([self.size,self.size])
-        for i in range(self.size):
-            for j in range(self.size):
-                m,n = int(i/res),int(j/res)
-                result[i][j] = self.smooth(i/res,j/res)
-        return result
-        
-    def smooth(self,y,x):
+    def lissage(self,y,x):
         """Cette fonction lisse l'interpolation pour avoir un meilleur résultat, en utilisant
         une interpolation bilinéaire"""
         x0 = int(x)         #partie entière
@@ -119,11 +132,11 @@ class Map(object):
         
         x1 = (x0+1)
         y1 = (y0+1)
-        if(x1 > len(self.white)-1): x1 = len(self.white)-1
-        if(y1 > len(self.white)-1): y1 = len(self.white)-1
+        if(x1 > len(self.blanc)-1): x1 = len(self.blanc)-1
+        if(y1 > len(self.blanc)-1): y1 = len(self.blanc)-1
         
-        dx1 = self.lerp(frac_x,self.white[y0][x0],self.white[y0][x1])        #interpolation bilinéaire de la valeur du pixel
-        dx2 = self.lerp(frac_x,self.white[y1][x0],self.white[y1][x1])
+        dx1 = self.lerp(frac_x,self.blanc[y0][x0],self.blanc[y0][x1])        #interpolation bilinéaire de la valeur du pixel
+        dx2 = self.lerp(frac_x,self.blanc[y1][x0],self.blanc[y1][x1])
         result = self.lerp(frac_y,dx1,dx2)
         return result
         
@@ -132,34 +145,64 @@ class Map(object):
         t = (p**2)*(3 - 2*p)          #lissage de l'interpolation, cubique 
         return a*(1-t) + b*t        #interpolation
         
-    def white_noise(self,size,seed):
+    def bruit_blanc(self,dim,perm):
         """Génération d'un bruit blanc, selon une graine (table de permutation)"""
-        mat = np.zeros([size,size])
-        for i in range(size):
-            for j in range(size):
-                mat[i][j] = seed[ (j%256 + seed[i%256]) % 256 ]
+        mat = np.zeros([dim,dim])
+        for i in range(dim):
+            for j in range(dim):
+                mat[i][j] = perm[ (j%256 + perm[i%256]) % 256 ]
         return mat
 
-    def norm(self,mat):
+    def distrib(self,mat):
         """Redistribue les valeurs d'une matrice entre 0 et 1"""
         mx,mn = np.ceil(np.amax(mat)),np.floor(np.amin(mat))
         result = (mat-mn)/(mx-mn)
         return result
+        
+        
+    """
+    Modification et mise à jour de l'état de la simulation
+    """
+    def tour(self,*pompiers):
+        self.iter+= 1
+    
+    def johny(self,n):
+        """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! """
+        for i in range(n):
+            b = True
+            while(b):           #boucle de test pour ne pas bruler l'eau
+                b = False
+                a,b = rnd.randint(0,self.taille-1)
+                case = self.cherche(a,b)
+                if(case.nat != 0): b = True
+            case.etat = 1
+            self.liste_brule.append(case)
+            
+    def creer_pomp(self,n):
+        for i in range(n):
+            nom = "august"+str(i)
+            a,b = rnd.randint(0,self.taille-1)
+            #liste_pompier.append(Pompier(nom,a,b))     #créer un nouveau pompier et l'ajoute à la liste
+        
+    def cherche(self,x,y):
+        """Cette fonction cherche une case aux coordonnées x et y, et renvoie l'objet Case correspondant"""
+        result = None
+        for case in self.liste_case:
+            if(case.x == x and case.y == y): result = case
+        return result
+        
+#    def sauvegarde(self):
+#        bd.sauve_carte(self.liste_case,self.tour)
+        
+        
 
-    def adjust(self,mat,value):
-        """Cette fonction permet d'augmenter ou de diminuer la valeur globale d'une matrice,
-        toujours entre 0 et 1"""
-        if(value < 0.01): value = 1
-        mat = mat**value
-        return mat
 
+carte = Carte(50)     #initialise une carte (ne pas dépasser une taille de 1000, sinon calcul trop long)
 
-mappy = Map(20)     #initialise une carte (ne pas dépasser une taille de 1000, sinon calcul trop long)
-map1 = mappy.terraform()        #calcul de la carte, utilisable pour la simulation
+#alti = carte.heightmap()      #exemple d'une carte de hauteur
+carte.creation()        #calcul de la carte, utilisable pour la simulation
 
-height = mappy.heightmap()      #exemple d'une carte de hauteur
+plt.matshow(carte,cmap=sim_color)
 
-plt.matshow(map1,cmap=sim_color)
-
-#plt.colorbar()         #affiche la carte de couleurs utilisé sur le graphique
+plt.colorbar()         #affiche la carte de couleurs utilisé sur le graphique
 #plt.savefig("map.png",dpi=250,facecolor='white')           #sauvegarde en tant qu'image
