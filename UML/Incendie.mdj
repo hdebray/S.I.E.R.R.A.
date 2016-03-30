@@ -257,7 +257,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+liste_brule: list d indices",
+											"text": "+liste_brule: liste de cases",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										},
@@ -1719,7 +1719,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+cherche_feu(liste_cases, liste_brule)",
+											"text": "+cherche_feu(liste_brule)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										},
@@ -2418,7 +2418,7 @@
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
-							"type": "list d indices",
+							"type": "liste de cases",
 							"isReadOnly": false,
 							"isOrdered": false,
 							"isUnique": false,
@@ -2944,27 +2944,10 @@
 									"_parent": {
 										"$ref": "AAAAAAFTxt34F+OuP9A="
 									},
-									"name": "liste_cases",
-									"visibility": "public",
-									"isStatic": false,
-									"isLeaf": false,
-									"type": "",
-									"isReadOnly": false,
-									"isOrdered": false,
-									"isUnique": false,
-									"direction": "in"
-								},
-								{
-									"_type": "UMLParameter",
-									"_id": "AAAAAAFTxt5fYePc6GE=",
-									"_parent": {
-										"$ref": "AAAAAAFTxt34F+OuP9A="
-									},
 									"name": "liste_brule",
 									"visibility": "public",
 									"isStatic": false,
 									"isLeaf": false,
-									"type": "",
 									"isReadOnly": false,
 									"isOrdered": false,
 									"isUnique": false,
