@@ -62,10 +62,9 @@ class Case(object):
             a=0
             while a<n:
                 position=rdm.randint(0,len(brulables))
-                for indice in case_a_bru:
-                    if position!=case_a_bru[indice]:
-                        case_a_bru.append(ind)
-                        a=len(case_a_bru)
+                case_a_bru.append(brulables[position])
+                del brulables[position]
+                a=len(case_a_bru)
             
             
             for case in case_a_bru:
