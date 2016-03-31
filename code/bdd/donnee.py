@@ -14,7 +14,7 @@ def sauve_carte(liste_case,iteration):
     l'itération lors de la sauvegarde
     """
     try:
-        con = sql.connect('simu.db')
+        con = sql.connect('bdd/simu.db')
         cur = con.cursor()
         
         cur.execute("CREATE TABLE IF NOT EXISTS cases(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, x INT, y INT, nature INT, etat INT, carbo INT, tour INT)") 
