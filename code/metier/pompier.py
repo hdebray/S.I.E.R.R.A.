@@ -8,7 +8,7 @@ import numpy as np
 import random as rdm
 
 def distance(x1,y1,x2,y2):  #Peut-être utiliser la distance de Manhattan ? |xb - xa| + |yb - ya|
-"""Calcul de la distance euclidienne entre deux points 1 et 2"""
+    """Calcul de la distance euclidienne entre deux points 1 et 2"""
     return np.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 
@@ -18,42 +18,42 @@ class Pompier(object):
         self.x = x
         self.y = y
         
+    def __str__(self):
+        return "{}".format(self.nom)
+        
     def deplacement(self,autre):
         """Déplacement d'un pompier vers une autre case"""
         if self.x < autre.x and self.y < autre.y:
             self.x,self.y = self.x+1,self.y+1
-        elif self.x > autre.x and self.y > autre.y:
-            self.x,self.y = self.x-1,self.y-1
         elif self.x < autre.x and self.y > autre.y:
             self.x,self.y = self.x+1,self.y-1
-        elif self.x > autre.x and self.y < autre.y:
+        elif self.x > autre.x and self.y > autre.y:
             self.x,self.y = self.x-1,self.y-1
+        elif self.x > autre.x and self.y < autre.y:
+            self.x,self.y = self.x-1,self.y+1
         elif self.x > autre.x and self.y == autre.y:
             self.x = self.x-1
-        elif self.x == autre.x and self.y < autre.y:
-            self.y = self.y+1
+        elif self.x < autre.x and self.y == autre.y:
+            self.x = self.x+1
         elif self.x == autre.x and self.y > autre.y:
             self.y = self.y-1
-        elif self.x > autre.x and self.y == autre.y:
-            self.x = self.x+1
+        elif self.x == autre.x and self.y < autre.y:
+            self.y = self.y+1
         
         
-    def agir(self,carte,liste_brule):
-        case_perso = carte.recherche(self.x,self.y)     #case qui correspond à la position du pompier
+    def agir(self,carte):
+        """Méthode principale du pompier, pour appeler les autre fonctions"""
+        case_perso = carte.cherche(self.x,self.y)     #case qui correspond à la position du pompier
         adj = case_perso.adjacence(carte)               #liste des cases adjacentes à celle du pompier
         
-        objectif = self.cherche_feu(liste_brule)        #cherche les cases qui brulent
+        objectif = self.cherche_feu(carte.liste_brule)        #cherche les cases qui brulent
         if(objectif != None):
-            self.aller_vers_feu(case_perso,adj,objectif,carte)        #le pompier se déplace
+            self.aller_vers_feu(case_perso,adj,objectif)        #le pompier se déplace
             
-            case_perso = carte.recherche(self.x,self.y)
+            case_perso = carte.cherche(self.x,self.y)
             adj = case_perso.adjacence(carte)
-            nouv_liste_brule = self.eteindre_feu(case_perso,adj,liste_brule)        #le pompier éteint le feu
-            
-        else: nouv_liste_brule = liste_brule
-            
-        return nouv_liste_brule
-            
+            self.eteindre_feu(case_perso,adj,carte)        #le pompier éteint le feu
+
         
     def cherche_feu(self,liste_brule):
         """Cherche la case qui brule la plus proche du pompier, selon la distance entre chaque case qui brule"""
@@ -62,29 +62,31 @@ class Pompier(object):
         
         for cell in liste_brule:        #parcourt la liste des cases en feu
             temp = distance(self.x,self.y, cell.x,cell.y)
-            if temp < dist:     #si la distance est plus courte, le pompier voit choisir cette case
+            if temp < dist:     #si la distance est plus courte, le pompier va choisir cette case
                 dist = temp
                 case = cell
         return case
             
             
-    def aller_vers_feu(self,case,adjacentes,case_feu,carte):
-        if case.etat > 0:       #si la case du pompier est en feu, il s'en écarte 
+    def aller_vers_feu(self,case,liste_adj,case_feu):
+        """Gère le déplacement du pompier en fonction de sa position et de la position de la case en feu"""
+        if case.etat > 0:       #si la case du pompier est en feu, il s'en écarte
             issue = case
-            for cell in adjacentes:
-                if cell.etat < issue.etat:
+            for cell in liste_adj:
+                if cell.etat < issue.etat:      #on cherche la case à l'intensité la plus faible
                     issue = cell
             self.deplacement(issue)     #déplacement en direction de l'issue
         
         else:
             bouge = True        #booléen pour savoir si pompier va bouger ou non
-            for cell in adjacentes:
-                if(case_feu == cell): bouge = False     #si la case objectif est adjacentes, le pompier ne se déplace pas
+            for cell in liste_adj:
+                if(case_feu.x == cell.x and case_feu.y == cell.y): bouge = False     #si la case objectif est adjacentes, le pompier ne se déplace pas
             
             if(bouge): self.deplacement(case_feu)     #déplacement en direction du feu
                   
 
-    def eteindre_feu(self,case,liste_adj,liste_brule):
+    def eteindre_feu(self,case,liste_adj,carte):
+        """Calcul les cases adjacentes qui peuvent être éteintes à partir de la position actuelle du pompier"""
         brule = []      #liste des cellules adjacentes qui brulent
         for cell in liste_adj:
             if(cell.etat > 0 and cell.carbo == False):      #si la case brule, mais n'est pas cramé
@@ -94,15 +96,14 @@ class Pompier(object):
             for cell in brule:
                 cell.etat -= 2              #on éteint la case
                 if(cell.etat < 0): cell.etat = 0  #l'intensité du feu n'est pas inférieure à 0
-                if(cell.etat == 0): liste_brule.remove(cell)
+                if(cell.etat == 0): carte.liste_brule.remove(cell)
                 
         else:
             for i in range(len(brule)):
-                r = rdm.randint(0,len(brule))       #choix aléatoire de la case à éteindre, parmis celles disponibles
+                r = rdm.randint(0,len(brule)-1)       #choix aléatoire de la case à éteindre, parmis celles disponibles
                 cell = brule[r]
                 cell.etat -= 2
                 if(cell.etat < 0): cell.etat = 0
                 if(cell.etat == 0):
-                    liste_brule.remove(cell)
+                    carte.liste_brule.remove(cell)
                     brule.remove(brule[r])      #on retire la case qui vient d'etre éteinte
-        return liste_brule
