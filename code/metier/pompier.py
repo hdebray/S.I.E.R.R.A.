@@ -102,7 +102,9 @@ class Pompier(object):
                 if(cell.etat == 0): carte.liste_brule.remove(cell)
                 
         else:
-            for i in range(len(brule)):
+            k=len(brule)
+            i=0
+            while i < k:
                 r = rdm.randint(0,len(brule)-1)       #choix aléatoire de la case à éteindre, parmis celles disponibles
                 cell = brule[r]
                 cell.etat -= 2
@@ -110,3 +112,6 @@ class Pompier(object):
                 if(cell.etat == 0):
                     carte.liste_brule.remove(cell)
                     brule.remove(brule[r])      #on retire la case qui vient d'etre éteinte
+                    
+                i+=1
+                k=len(brule)
