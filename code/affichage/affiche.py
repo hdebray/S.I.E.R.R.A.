@@ -47,8 +47,8 @@ earth_color = col.LinearSegmentedColormap('earth',color_map,N=256)
 """
 Création d'une carte de couleurs finies par valeurs discrètes, en code hexadécimal
 """
-cpool = ['#2a0d03','#0085ff', '#00e503', '#4e8539', '#cbbeb5', 
-         '#d85429', '#d44212', '#be3b10', '#a9340e', '#942e0c']
+cpool = ['#2a0d03','#0085ff', '#00e503', '#4e8539', '#b6aba2', 
+         '#dc6741', '#d44212', '#a9340e', '#7f270a', '#541a07']
          
 """Sauvegarde des couleurs de simulation, une par intensité maximale sur la carte"""
 sim_0 = col.ListedColormap(cpool[1:5], 'indexed')       #pas de feu
@@ -61,7 +61,7 @@ sim_3 = col.ListedColormap(cpool[1:8], 'indexed')       #intensité max = 3
 cm.register_cmap(cmap=sim_3)
 sim_4 = col.ListedColormap(cpool[1:9], 'indexed')       #intensité max = 4
 cm.register_cmap(cmap=sim_4)
-sim_5 = col.ListedColormap(cpool[1:10], 'indexed')       #intensité max = 4
+sim_5 = col.ListedColormap(cpool[1:10], 'indexed')       #intensité max = 5
 cm.register_cmap(cmap=sim_5)
 
 """Couleurs utilisés si il y a des cases carbonisées"""
@@ -78,8 +78,9 @@ cm.register_cmap(cmap=sim_4_c)
 sim_5_c = col.ListedColormap(cpool[0:10], 'indexed')
 cm.register_cmap(cmap=sim_5_c)
 
-def dessine(carte):
-    """Affichage de la carte sous forme d'une matrice avec la fonction matshow"""
+def dessine(carte,nom=''):
+    """Affichage de la carte sous forme d'une matrice avec la fonction matshow
+    La variable 'nom' permet de sauvegarder l'image sous un nom différent"""
     carbo = carte.calcul_mat()      #mise à jour de lamatrice en fonction des cases, renvoie un booléen pour les cases carbo
     mx = np.amax(carte.carte)       #maximum de valeur dans la matrice, pour déterminer la carte de couleur
     
@@ -97,10 +98,17 @@ def dessine(carte):
         if(mx == 6): couleur = sim_3_c
         if(mx == 7): couleur = sim_4_c
         if(mx == 8): couleur = sim_5_c
-        else: couleur = sim_0
-        
+    
+    plt.ioff()         #empêche l'affichage des images
+    
     plt.matshow(carte.carte,cmap=couleur)
-    plt.colorbar()
+    plt.colorbar()     #affiche le code couleur utilisé
     
     for pompier in carte.liste_pompier:     #affiche toute les pompiers avec un carré rouge de 5 pixels
         plt.plot(pompier.x,pompier.y,'rs',markersize=5)
+    
+    plt.axis([-0.5,carte.taille-0.5,-0.5,carte.taille-0.5])     #cadre l'image et cache les axes
+    plt.axis('off')
+    
+    txt = "./images/img" + str(carte.iter) + nom + ".png"      #nom de l'image
+    plt.savefig(txt,dpi=100,bbox_inches='tight',pad_inches=0)
