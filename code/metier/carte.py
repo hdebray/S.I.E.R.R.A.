@@ -132,15 +132,16 @@ class Carte(object):
         if(self.iter == 0 and len(self.liste_brule) < 1): self.ini()     #initialisation si cela n'a pas été fait
         self.iter+= 1
         
-        k = len(self.liste_brule)       #on stocke la liste_brule, pour n'agir que sur ceux qui existe déjà
-        for i in range(k):
+        k = len(self.liste_brule)
+        i = 0
+        while(i < k):
             if(len(self.liste_brule) > 0):
-                print(len(self.liste_brule),i)
-                
                 cell = self.cherche(self.liste_brule[i].x,self.liste_brule[i].y)        #on récupère la cellule qui va être propagé 
                 cell.propagation(self)
-                if(cell.carbo == True): i -= 1      #si la case vient d'être carbonisé, la taille de liste_brule a diminué
-        
+                if(cell.carbo == True): k -= 1      #si la case vient d'être carbonisé, la taille de liste_brule a diminué
+                
+                i += 1
+                
         af.dessine(self,'a')
         
         for pmp in self.liste_pompier:
