@@ -131,17 +131,23 @@ class Carte(object):
     def tour(self):
         if(self.iter == 0 and len(self.liste_brule) < 1): self.ini()     #initialisation si cela n'a pas été fait
         self.iter+= 1
-        #af.dessine(self)        #dessine l'objet Carte
+        
+        k = len(self.liste_brule)       #on stocke la liste_brule, pour n'agir que sur ceux qui existe déjà
+        for i in range(k):
+            if(len(self.liste_brule) > 0):
+                print(len(self.liste_brule),i)
+                
+                cell = self.cherche(self.liste_brule[i].x,self.liste_brule[i].y)        #on récupère la cellule qui va être propagé 
+                cell.propagation(self)
+                if(cell.carbo == True): i -= 1      #si la case vient d'être carbonisé, la taille de liste_brule a diminué
+        
+        af.dessine(self,'a')
         
         for pmp in self.liste_pompier:
             pmp.agir(self)
-        af.dessine(self)
-        
-        temp_brule = self.liste_brule       #on stocke la liste_brule, pour n'agir que sur ceux qui existe déja
-        for cell in temp_brule:
-            cell.propagation(self)
-        af.dessine(self)
-    
+            
+        af.dessine(self,'b')
+            
     
     def johny(self,n):
         """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! """

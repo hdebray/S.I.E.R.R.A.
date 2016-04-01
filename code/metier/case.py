@@ -55,8 +55,6 @@ class Case(object):
             if n>8: n=8                             #ne peut pas dépasser 8
         else: n = rdm.randint(0,self.etat)
         
-        print(n,'\n')
-        
         if n>=len(brulables):               #si il y a plus de cases à bruler que de cases brulables, elles sont toutes brulé
             for case in brulables:
                 case.etat = 1
@@ -79,3 +77,4 @@ class Case(object):
             self.carbo = True
             self.etat = 1
             carte.liste_brule.remove(self)      #les cases carbonisé ne font plus parties de la liste des cases en feu
+            

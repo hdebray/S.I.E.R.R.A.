@@ -48,11 +48,14 @@ class Pompier(object):
         
         objectif = self.cherche_feu(carte.liste_brule)        #cherche les cases qui brulent
         if(objectif != None):
-            self.aller_vers_feu(case_perso,adj,objectif)        #le pompier se déplace
-            
-            case_perso = carte.cherche(self.x,self.y)
-            adj = case_perso.adjacence(carte)
-            self.eteindre_feu(case_perso,adj,carte)        #le pompier éteint le feu
+            deplacement = True
+            for case in adj:        #on cherche si le pompier est à coté du feu
+                if(case.x == objectif.x and case.y == objectif.y): deplacement = False
+                
+            if(deplacement):
+                self.aller_vers_feu(case_perso,adj,objectif)        #le pompier se déplace
+            else:
+                self.eteindre_feu(case_perso,adj,carte)        #le pompier éteint le feu
 
         
     def cherche_feu(self,liste_brule):
