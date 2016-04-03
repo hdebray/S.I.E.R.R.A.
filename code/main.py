@@ -6,6 +6,7 @@ Created on Thu Mar 31 10:26:48 2016
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 import metier.carte as crt
 import metier.case as cs
@@ -13,21 +14,28 @@ import metier.pompier as pom
 import affichage.affiche as af
 
 
+"""
+A faire:
+-gif avec les images successives
+-tester toute les 'briques élémentaires'
+"""
+
+
 """Test sur l'objet Pompier"""
-gus = pom.Pompier('Augustin',0,0)       #créer un pompier
+gus = pom.Pompier('Augustin',0,0)       #créé un pompier
 #print(gus)
 
 """Test sur l'objet Case"""
 
 
 """Test sur l'objet Carte"""
-carte = crt.Carte(10)     #initialise une carte (ne pas dépasser une taille de 500, sinon calcul trop long)
+carte = crt.Carte(25)     #initialise une carte (ne pas dépasser une taille de 500, sinon calcul trop long)
 
 #bruit = carte.heightmap()      #test sur la création d'un seul bruit de valeur
 #plt.matshow(bruit,cmap='gray')
 
 carte.creation()        #création de la carte de simulation
-carte.ini(1,2)
+carte.ini()             #initialisation du nombre de feu, et du nombre de pompiers
 
 #for p in carte.liste_pompier:      #affiche les pompiers
 #    print(p)
@@ -40,7 +48,11 @@ carte.ini(1,2)
 
 
 af.dessine(carte)       #affichage de l'état initial
-
-for i in range(2):      #réalise deux tours de simulation
+i=0
+while(len(carte.liste_brule) > 0):      #réalise deux tours de simulation
     carte.tour()
     
+    i+=1
+    if(i>4*carte.taille):break      #ceinture de sécurité
+
+af.compiler()
