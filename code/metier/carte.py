@@ -123,15 +123,14 @@ class Carte(object):
     Modification et mise à jour de l'état de la simulation
     """
     def ini(self,foyer=-1,pompier=-1):
-        if(foyer < 0): foyer = int(self.taille/10)
+        if(foyer < 0): foyer = int( np.ceil(self.taille/20) )
         self.johny(foyer)           #allumer le feu
-        if(pompier < 0): pompier = int(self.taille/4)
+        if(pompier < 0): pompier = int( np.ceil(self.taille/3) )
         self.creer_pompier(pompier)     #créer les pompiers
         
     def tour(self):
         if(self.iter == 0 and len(self.liste_brule) < 1): self.ini()     #initialisation si cela n'a pas été fait
         self.iter+= 1
-        
         k = len(self.liste_brule)
         i = 0
         while(i < k):
@@ -139,13 +138,13 @@ class Carte(object):
                 cell = self.cherche(self.liste_brule[i].x,self.liste_brule[i].y)        #on récupère la cellule qui va être propagé 
                 cell.propagation(self)
                 if(cell.carbo == True): k -= 1      #si la case vient d'être carbonisé, la taille de liste_brule a diminué
-                
                 i += 1
                 
         af.dessine(self,'a')
         
         for pmp in self.liste_pompier:
             pmp.agir(self)
+            if(pmp.pv <= 0): self.liste_pompier.remove(pmp)         #le pompier est mort
             
         af.dessine(self,'b')
             
@@ -205,4 +204,22 @@ class Carte(object):
     def sauvegarde(self):
         """Sauvegarde l'état actuel de la matrice"""
         bd.sauve_carte(self.liste_case,self.iter)
+        bd.sauve_pompier(self.liste_pompier,self.iter)
         
+    def construit(self,num):
+        self.liste_case = []
+        self.liste_brule = []
+        
+        result = bd.recup_case(num)
+        for ligne in result:
+            case = cs.Case(ligne[0],ligne[1],ligne[2],ligne[3],ligne[4])
+            self.liste_brule.append(case)
+            if(ligne[3] > 0 and ligne[4] == False):     #intensité > 0 et carbo = Fasle
+                self.liste_brule.append(case)
+                
+        self.liste_pompier = []
+        
+        result = bd.recup_pompier(num)
+        for ligne in result:
+            pomp = pom.Pompier(ligne[0],ligne[1],ligne[2],ligne[3])
+            self.liste_pompier.append(pomp)

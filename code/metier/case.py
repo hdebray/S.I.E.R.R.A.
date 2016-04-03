@@ -47,7 +47,7 @@ class Case(object):
         #propagation du feu
         brulables = []                  #liste des cases où le feu peut se propager
         for cell in adj:
-            if(cell.nat != 0 and cell.carbo == False and cell.etat == 0):  #conditions pour bruler une case
+            if(cell.nat != 0 and cell.etat == 0):  #conditions pour bruler une case
                 brulables.append(cell)
                 
         if(self.nat == 2):                          #si c'est un arbre, la propagation est doublé

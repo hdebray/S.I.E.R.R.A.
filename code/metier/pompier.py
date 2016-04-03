@@ -17,6 +17,7 @@ class Pompier(object):
         self.nom = str(nom)
         self.x = x
         self.y = y
+        self.pv = 20
         
     def __str__(self):
         return "{}".format(self.nom)
@@ -73,12 +74,15 @@ class Pompier(object):
             
     def aller_vers_feu(self,case,liste_adj,case_feu):
         """Gère le déplacement du pompier en fonction de sa position et de la position de la case en feu"""
-        if case.etat > 0:       #si la case du pompier est en feu, il s'en écarte
+        if(case.etat > 0 and case.carbo != True):       #si la case du pompier est en feu, il s'en écarte
+        
+            self.pv -= case.etat                #le pompier est brulé d'un montant égal à l'intensité
+            
             issue = case
             for cell in liste_adj:
                 if cell.etat < issue.etat:      #on cherche la case à l'intensité la plus faible
                     issue = cell
-            self.deplacement(issue)     #déplacement en direction de l'issue
+            self.deplacement(issue)             #déplacement en direction de l'issue
         
         else:
             bouge = True        #booléen pour savoir si pompier va bouger ou non
