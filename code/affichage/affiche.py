@@ -83,20 +83,22 @@ cm.register_cmap(cmap=sim_4_c)
 sim_5_c = col.ListedColormap(cpool[0:10], 'indexed')
 cm.register_cmap(cmap=sim_5_c)
 
-def dessine(carte,nom=''):
+def dessine(carte,svg=True,nom='',cache=True,couleur=False):
     """Affichage de la carte sous forme d'une matrice avec la fonction matshow
-    La variable 'nom' permet de sauvegarder l'image sous un nom différent"""
-    carbo = carte.calcul_mat()      #mise à jour de lamatrice en fonction des cases, renvoie un booléen pour les cases carbo
+    svg pour sauvegarder l'image, nom pour spécifier un nom, affich pour afficher l'image, couleur pour le code couleur
+    """
+    carbo = carte.calcul_mat()      #mise à jour de la matrice en fonction des cases
     mx = np.amax(carte.carte)       #maximum de valeur dans la matrice, pour déterminer la carte de couleur
+    mn = np.amin(carte.carte)       #minimum de valeur, pour identifier les cases carbonisées
         
-    if(carbo == False):
+    if(mn == 0):            #on détermine les couleurs utilisés pour afficher le terrain
         if(mx <= 3.0): couleur = sim_0
         elif(mx == 4.0): couleur = sim_1
         elif(mx == 5.0): couleur = sim_2
         elif(mx == 6.0): couleur = sim_3
         elif(mx == 7.0): couleur = sim_4
         elif(mx == 8.0): couleur = sim_5
-    else:       #on utilise les couleurs spécifiques au cas "carbonisé"
+    else:                   #on utilise les couleurs spécifiques au cas "carbonisé"
         if(mx <= 3.0): couleur = sim_0_c
         elif(mx == 4.0): couleur = sim_1_c
         elif(mx == 5.0): couleur = sim_2_c
@@ -105,31 +107,30 @@ def dessine(carte,nom=''):
         elif(mx == 8.0): couleur = sim_5_c
         else: print(mx,carbo)
         
-    plt.ioff()         #empêche l'affichage des images
+    if(cache): plt.ioff()         #empêche l'affichage des images
         
     plt.matshow(carte.carte,cmap=couleur)
-    #plt.colorbar()     #affiche le code couleur utilisé
+    
+    if(couleur): plt.colorbar()     #affiche le code couleur utilisé
         
-    for pompier in carte.liste_pompier:     #affiche toute les pompiers avec un carré rouge de 5 pixels
-        plt.plot(pompier.x,pompier.y,'rs',markersize=5)
+    for pompier in carte.liste_pompier:     #affiche toute les pompiers avec un carré rouge de 3 pixels
+        plt.plot(pompier.x,pompier.y,'rs',markersize=3)
         
     plt.axis([-0.5,carte.taille-0.5,-0.5,carte.taille-0.5])     #cadre l'image et cache les axes
     plt.axis('off')
         
-    txt = "img" + str(carte.iter+10) + nom + ".png"      #nom de l'image
-    plt.savefig(txt,dpi=100,bbox_inches='tight',pad_inches=0)
+    if(svg):
+        txt = "images/img" + str(carte.iter+10) + nom + ".png"      #nom de l'image
+        plt.savefig(txt,dpi=100,bbox_inches='tight',pad_inches=0)
 
 
-def compiler():
+def compiler(eff=False):
     """Permet de convertir la liste d'images en un gif, puis supprime les images créé
     Il est nécéssaire d'installer Imagemagick pour convertir, ainsi que de sauvegarder les png à la racine
     """
     
-#    args = ['convert', '*.png', 'toto.gif']
-#    subprocess.call(args,shell=True)
+    os.system('convert -delay 50 -loop 0 images/*.png images/simulation.gif')
     
-    os.system('convert -delay 50 -loop 0 *.png simulation.gif')
-    
-    os.system('del *.png')    # destruction des images
+    if(eff): os.system('del *.png')    # destruction des images
     
     
