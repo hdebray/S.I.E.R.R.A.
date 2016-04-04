@@ -29,7 +29,7 @@ gus = pom.Pompier('Augustin',0,0)       #créé un pompier
 
 
 """Test sur l'objet Carte"""
-carte = crt.Carte(25)     #initialise une carte (ne pas dépasser une taille de 500, sinon calcul trop long)
+carte = crt.Carte(10)     #initialise une carte (ne pas dépasser une taille de 500, sinon calcul trop long)
 
 #bruit = carte.heightmap()      #test sur la création d'un seul bruit de valeur
 #plt.matshow(bruit,cmap='gray')
@@ -55,4 +55,4 @@ while(len(carte.liste_brule) > 0):      #réalise deux tours de simulation
     i+=1
     if(i>4*carte.taille):break      #ceinture de sécurité
 
-af.compiler()
+af.compiler(eff=True)       #transforme les images en gif   !! Imagemagick nécéssaire !!
