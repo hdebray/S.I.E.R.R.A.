@@ -122,11 +122,11 @@ class Carte(object):
     """
     Modification et mise à jour de l'état de la simulation
     """
-    def ini(self,foyer=-1,pompier=-1):
-        if(foyer < 0): foyer = int( np.ceil(self.taille/20) )
-        self.johny(foyer)           #allumer le feu
-        if(pompier < 0): pompier = int( np.ceil(self.taille/3) )
-        self.creer_pompier(pompier)     #créer les pompiers
+    def ini(self,foyer=-1,pompiers=-1):
+        if(foyer < 0): foyer = int( np.ceil(self.taille/30) )
+        self.johny(foyer)               #allume le feu
+        if(pompiers < 0): pompiers = int( np.ceil(self.taille/3) )
+        self.creer_pompier(pompiers)     #créer les pompiers
         
     def tour(self):
         if(self.iter == 0 and len(self.liste_brule) < 1): self.ini()     #initialisation si cela n'a pas été fait
@@ -140,13 +140,13 @@ class Carte(object):
                 if(cell.carbo == True): k -= 1      #si la case vient d'être carbonisé, la taille de liste_brule a diminué
                 i += 1
                 
-        af.dessine(self,'a')
+        af.dessine(self,nom='a')
         
         for pmp in self.liste_pompier:
             pmp.agir(self)
             if(pmp.pv <= 0): self.liste_pompier.remove(pmp)         #le pompier est mort
             
-        af.dessine(self,'b')
+        af.dessine(self,nom='b')
             
     
     def johny(self,n):
@@ -182,10 +182,9 @@ class Carte(object):
         return result
         
     def calcul_mat(self):
-        """Cette fonction recalcule la matrice self.carte en fonction des cases, et indique si il y a
-        des cases carbonisées. Elle n'est normalement utilisé que pour l'affichage"""
+        """Cette fonction recalcule la matrice self.carte en fonction des cases dans la liste_case.
+        Elle n'est normalement utilisé que pour l'affichage"""
         self.carte = np.zeros([self.taille,self.taille])
-        case_carbo = False      #booléen pour savoir si il y a des cases carbonisées dans la carte
         for cell in self.liste_brule:       #on affecte d'abord les cases en feu
             i,j = cell.y,cell.x
             self.carte[i,j] = 3 + cell.etat
@@ -194,11 +193,9 @@ class Carte(object):
             i,j = cell.y,cell.x
             if(self.carte[i,j] == 0):       #si une valeur n'a pas déja été affecté
                     if(cell.carbo == True):     #si c'est une case carbo, on lui affecte le maximum +1 (pour l'affichage)
-                        case_carbo = True
                         self.carte[i,j] = -1
                     else:
                         self.carte[i,j] = cell.nat      #sinon, on affecte le chiffre correspondant à la nature
-        return case_carbo
         
         
     def sauvegarde(self):
