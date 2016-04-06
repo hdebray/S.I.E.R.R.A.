@@ -12,7 +12,6 @@ import matplotlib.cm as cm
 
 import warnings as war      #permet de gérer les warning comme des error
 import os
-import subprocess
 
 war.filterwarnings("ignore",category=RuntimeWarning)
 
@@ -83,7 +82,7 @@ cm.register_cmap(cmap=sim_4_c)
 sim_5_c = col.ListedColormap(cpool[0:10], 'indexed')
 cm.register_cmap(cmap=sim_5_c)
 
-def dessine(carte,svg=True,nom='',cache=True,couleur=False):
+def dessine(carte,svg=True,nom='',cache=True,coul=False):
     """Affichage de la carte sous forme d'une matrice avec la fonction matshow
     svg pour sauvegarder l'image, nom pour spécifier un nom, affich pour afficher l'image, couleur pour le code couleur
     """
@@ -111,7 +110,7 @@ def dessine(carte,svg=True,nom='',cache=True,couleur=False):
         
     plt.matshow(carte.carte,cmap=couleur)
     
-    if(couleur): plt.colorbar()     #affiche le code couleur utilisé
+    if(coul): plt.colorbar()     #affiche le code couleur utilisé
         
     for pompier in carte.liste_pompier:     #affiche toute les pompiers avec un carré rouge de 3 pixels
         plt.plot(pompier.x,pompier.y,'rs',markersize=3)
@@ -120,7 +119,7 @@ def dessine(carte,svg=True,nom='',cache=True,couleur=False):
     plt.axis('off')
         
     if(svg):
-        txt = "images/img" + str(carte.iter+10) + nom + ".png"      #nom de l'image
+        txt = "images/img" + str(carte.iter+100) + nom + ".png"      #nom de l'image, +100 pour éviter les problèmes d'indices (conversion)
         plt.savefig(txt,dpi=100,bbox_inches='tight',pad_inches=0)
 
 
@@ -131,6 +130,11 @@ def compiler(eff=False):
     
     os.system('convert -delay 50 -loop 0 images/*.png images/simulation.gif')
     
-    if(eff): os.system('del *.png')    # destruction des images
+    if(eff):    # destruction des images
+        dossier = 'images/'
+        for fichier in os.listdir(dossier):
+            if(fichier[-3:] == 'png'):
+                chemin = dossier+str(fichier)
+                os.remove(chemin)
     
     
