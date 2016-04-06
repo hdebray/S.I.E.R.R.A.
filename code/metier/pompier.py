@@ -88,10 +88,10 @@ class Pompier(object):
                 if(case_feu.x == cell.x and case_feu.y == cell.y): bouge = False     #si la case objectif est adjacentes, le pompier ne se déplace pas
             
             if(bouge):
-                if distance(self.x,self.y,case_feu.x,case_feu.y)>=3:
+                if distance(self.x,self.y,case_feu.x,case_feu.y)>=4:
                     self.deplacement(case_feu,2)     #déplacement en direction du feu en courant si on est loin
                 else:
-                    self.deplacement(case_feu,2)     #déplacement en direction du feu en marchant si on est proche
+                    self.deplacement(case_feu,1)     #déplacement en direction du feu en marchant si on est proche
                     
                     
     def eteindre_feu(self,case,liste_adj,carte):
