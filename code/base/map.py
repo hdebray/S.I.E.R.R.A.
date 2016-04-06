@@ -12,7 +12,7 @@ import base.fireman as frm
 import base.cell as cl
 import gui.display as display
 import db.data as db
-
+from base.fireman import distance
     
 
 
@@ -220,3 +220,18 @@ class Map(object):
         for line in result:
             frmp = frm.Fireman(line[0],line[1],line[2],line[3])
             self.fireman_list.append(frmp)
+            
+    def center(self,burn_list):
+        for cell in burn_list:
+            x_center+=burnlist[cell][0]/len(burn_list)
+            y_center+=burnlist[cell][1]/len(burn_list)
+            cent=(x_center,y_center)
+        return cent
+            
+    def radius(self,centroide,burn_list):
+        centroide=self.center(burn_list)
+            dist=0
+        for cell in burn_list:
+            dist=max(distance(cent[0],cent[1],burn_list[cell][0],burn_list[cell][1]))
+        return dist
+        
