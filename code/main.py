@@ -8,10 +8,10 @@ Created on Thu Mar 31 10:26:48 2016
 import matplotlib.pyplot as plt
 import numpy as np
 
-import metier.carte as crt
-import metier.case as cs
-import metier.pompier as pom
-import affichage.affiche as af
+import metier.map as map
+import metier.cell as cl
+import metier.fireman as frm
+import affichage.display as disp
 
 
 """
@@ -21,38 +21,38 @@ A faire:
 """
 
 
-"""Test sur l'objet Pompier"""
-gus = pom.Pompier('Augustin',0,0)       #créé un pompier
+"""Test sur l'objet Fireman"""
+gus = frm.Fireman('Augustin',0,0)       #créé un fireman
 #print(gus)
 
 """Test sur l'objet Case"""
 
 
-"""Test sur l'objet Carte"""
-carte = crt.Carte(10)     #initialise une carte (ne pas dépasser une taille de 500, sinon calcul trop long)
+"""Test sur l'objet Map"""
+map = map.Map(10)     #initialise une map (ne pas dépasser une size de 500, sinon calcul trop long)
 
-#bruit = carte.heightmap()      #test sur la création d'un seul bruit de valeur
+#bruit = map.heightmap()      #test sur la création d'un seul bruit de valeur
 #plt.matshow(bruit,cmap='gray')
 
-carte.creation()        #création de la carte de simulation
-carte.ini()             #initialisation du nombre de feu, et du nombre de pompiers
+map.creation()        #création de la map de simulation
+map.ini()             #initialisation du nombre de feu, et du nombre de firemans
 
-#for p in carte.liste_pompier:      #affiche les pompiers
+#for p in map.liste_fireman:      #display les firemans
 #    print(p)
 
-#for c in carte.liste_case:     #affiche les objets Cases de la simulation
+#for c in map.liste_cell:     #display les objets Cases de la simulation
 #    print(c)
     
-#for b in carte.liste_brule:     #affiche les objets Cases qui sont en feu
+#for b in map.burn_list:     #display les objets Cases qui sont en feu
 #    print(b)
 
 
-af.dessine(carte)       #affichage de l'état initial
+disp.draw(map)       #dispfichage de l'état initial
 i=0
-while(len(carte.liste_brule) > 0):      #réalise deux tours de simulation
-    carte.tour()
+while(len(map.burn_list) > 0):      #réalise deux turns de simulation
+    map.turn()
     
     i+=1
-    if(i>4*carte.taille):break      #ceinture de sécurité
+    if(i>4*map.size):break      #ceinture de sécurité
 
-af.compiler(eff=True)       #transforme les images en gif   !! Imagemagick nécéssaire !!
+disp.compile(delete=True)       #transforme les images en gif   !! Imagemagick nécéssaire !!
