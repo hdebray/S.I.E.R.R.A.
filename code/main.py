@@ -8,10 +8,10 @@ Created on Thu Mar 31 10:26:48 2016
 import matplotlib.pyplot as plt
 import numpy as np
 
-import metier.map as map
-import metier.cell as cl
-import metier.fireman as frm
-import affichage.display as disp
+import base.map as map
+import base.cell as cl
+import base.fireman as frm
+import gui.display as disp
 
 
 """

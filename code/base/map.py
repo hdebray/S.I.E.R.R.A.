@@ -8,10 +8,10 @@ Created on Mon Mar 28 11:49:48 2016
 import numpy as np
 import random as rnd
 
-import metier.fireman as frm
-import metier.cell as cl
-import affichage.display as display
-import bdd.data as db
+import base.fireman as frm
+import base.cell as cl
+import gui.display as display
+import db.data as db
 
     
 
