@@ -6,7 +6,7 @@ Created on Wed Mar 30 15:20:49 2016
 import numpy as np
 import random as rdm
 
-def distance(x1,y1,x2,y2):  #Peut-être utiliser la distance de Manhattan ? |xb - xa| + |yb - ya|
+def distance(x1,y1,x2,y2):  
     """Calcul de la distance euclidienne entre deux points 1 et 2"""
     return np.sqrt((x1-x2)**2 + (y1-y2)**2)
 
