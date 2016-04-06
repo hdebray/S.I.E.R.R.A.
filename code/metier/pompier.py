@@ -14,8 +14,8 @@ def distance(x1,y1,x2,y2):  #Peut-être utiliser la distance de Manhattan ? |xb 
 
 class Pompier(object):
     def __init__(self,nom,x,y):
-        self.nom = str(nom)
-        self.x = x
+        self.nom = str(nom)     #le nom sertd'identifiant
+        self.x = x              #coordonnées
         self.y = y
         self.pv = 20
         
@@ -74,10 +74,9 @@ class Pompier(object):
             
     def aller_vers_feu(self,case,liste_adj,case_feu):
         """Gère le déplacement du pompier en fonction de sa position et de la position de la case en feu"""
-        if(case.etat > 0 and case.carbo != True):       #si la case du pompier est en feu, il s'en écarte
+        if(case.etat > 0): self.pv -= case.etat                #le pompier est brulé d'un montant égal à l'intensité
         
-            self.pv -= case.etat                #le pompier est brulé d'un montant égal à l'intensité
-            
+        if(case.etat > 0 and case.carbo != True):       #si la case du pompier est en feu, il s'en écarte
             issue = case
             for cell in liste_adj:
                 if cell.etat < issue.etat:      #on cherche la case à l'intensité la plus faible
