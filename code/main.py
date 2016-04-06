@@ -55,4 +55,4 @@ while(len(map.burn_list) > 0):      #réalise deux turns de simulation
     i+=1
     if(i>4*map.size):break      #ceinture de sécurité
 
-disp.compile(delete=True)       #transforme les images en gif   !! Imagemagick nécéssaire !!
+disp.compile(delete=False)       #transforme les images en gif   !! Imagemagick nécéssaire !!
