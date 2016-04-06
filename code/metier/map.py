@@ -142,9 +142,9 @@ class Map(object):
                 
         display.draw(self,name='a')
         
-        for frm in self.fireman_list:
-            frm.agir(self)
-            if(frm.pv <= 0): self.fireman_list.remove(frm)         #le fireman est mort
+        for frmn in self.fireman_list:
+            frmn.update(self)
+            if(frmn.hp <= 0): self.fireman_list.remove(frmn)         #le fireman est mort
             
         display.draw(self,name='b')
             

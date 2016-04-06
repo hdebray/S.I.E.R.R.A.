@@ -86,7 +86,7 @@ def draw(map,svg=True,name='',hide=True,colorbar=False):
     """Affichage de la map sous forme d'une matrice avec la fonction matshow
     svg pour sauvegarder l'image, name pour spécifier un name, affich pour afficher l'image, color pour le code color
     """
-    charred = map.calcul_mat()      #mise à jour de la matrice en fonction des cases
+    charred = map.calc_mat()      #mise à jour de la matrice en fonction des cases
     mx = np.amax(map.map)       #maximum de valeur dans la matrice, pour déterminer la map de color
     mn = np.amin(map.map)       #minimum de valeur, pour identifier les cases charrednisées
         
@@ -112,14 +112,14 @@ def draw(map,svg=True,name='',hide=True,colorbar=False):
     
     if(colorbar): plt.colorbar()     #affiche le code color utilisé
         
-    for pompier in map.liste_pompier:     #affiche toute les pompiers avec un carré rouge de 3 pixels
+    for pompier in map.fireman_list:     #affiche toute les pompiers avec un carré rouge de 3 pixels
         plt.plot(pompier.x,pompier.y,'rs',markersize=3)
         
-    plt.axis([-0.5,map.taille-0.5,-0.5,map.taille-0.5])     #cadre l'image et hide les axes
+    plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #cadre l'image et hide les axes
     plt.axis('off')
         
     if(svg):
-        txt = "images/img" + str(map.iter+100) + name + ".png"      #name de l'image, +100 pour éviter les problèmes d'indices (conversion)
+        txt = "images/img" + str(map.count+100) + name + ".png"      #name de l'image, +100 pour éviter les problèmes d'indices (conversion)
         plt.savefig(txt,dpi=100,bbox_inches='tight',pad_inches=0)
 
 
@@ -133,7 +133,7 @@ def compile(delete=False):
     if(delete):    # destruction des images
         directory = 'images/'
         for file in os.listdir(directory):
-            if(fichier[-3:] == 'png'):
+            if(file[-3:] == 'png'):
                 path = directory+str(file)
                 os.remove(path)
     

@@ -35,7 +35,7 @@ class Cell(object):
         for i in range(self.x-1, self.x+2):
             for j in range(self.y-1, self.y+2):
                 #if(i == j): continue
-                if(i>=0 and i<map.size and j>=0 and j<map.size): near_cells.append(map.cherche(i,j))
+                if(i>=0 and i<map.size and j>=0 and j<map.size): near_cells.append(map.search(i,j))
         return near_cells
         
         
