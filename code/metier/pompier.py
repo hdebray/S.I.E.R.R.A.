@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 30 15:20:49 2016
-
 @author: Amaury
 """
 import numpy as np
@@ -22,24 +21,24 @@ class Pompier(object):
     def __str__(self):
         return "{}".format(self.nom)
         
-    def deplacement(self,autre):
+    def deplacement(self,autre,n):
         """Déplacement d'un pompier vers une autre case"""
         if self.x < autre.x and self.y < autre.y:
-            self.x,self.y = self.x+1,self.y+1
+            self.x,self.y = self.x+n,self.y+n
         elif self.x < autre.x and self.y > autre.y:
-            self.x,self.y = self.x+1,self.y-1
+            self.x,self.y = self.x+n,self.y-n
         elif self.x > autre.x and self.y > autre.y:
-            self.x,self.y = self.x-1,self.y-1
+            self.x,self.y = self.x-n,self.y-n
         elif self.x > autre.x and self.y < autre.y:
-            self.x,self.y = self.x-1,self.y+1
+            self.x,self.y = self.x-n,self.y+n
         elif self.x > autre.x and self.y == autre.y:
-            self.x = self.x-1
+            self.x = self.x-n
         elif self.x < autre.x and self.y == autre.y:
-            self.x = self.x+1
+            self.x = self.x+n
         elif self.x == autre.x and self.y > autre.y:
-            self.y = self.y-1
+            self.y = self.y-n
         elif self.x == autre.x and self.y < autre.y:
-            self.y = self.y+1
+            self.y = self.y+n
         
         
     def agir(self,carte):
@@ -88,9 +87,13 @@ class Pompier(object):
             for cell in liste_adj:
                 if(case_feu.x == cell.x and case_feu.y == cell.y): bouge = False     #si la case objectif est adjacentes, le pompier ne se déplace pas
             
-            if(bouge): self.deplacement(case_feu)     #déplacement en direction du feu
-                  
-
+            if(bouge):
+                if distance(self.x,self.y,case_feu.x,case_feu.y)>=3:
+                    self.deplacement(case_feu,2)     #déplacement en direction du feu en courant si on est loin
+                else:
+                    self.deplacement(case_feu,2)     #déplacement en direction du feu en marchant si on est proche
+                    
+                    
     def eteindre_feu(self,case,liste_adj,carte):
         """Calcul les cases adjacentes qui peuvent être éteintes à partir de la position actuelle du pompier"""
         brule = []      #liste des cellules adjacentes qui brulent
