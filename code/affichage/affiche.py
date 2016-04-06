@@ -82,7 +82,7 @@ cm.register_cmap(cmap=sim_4_c)
 sim_5_c = col.ListedColormap(cpool[0:10], 'indexed')
 cm.register_cmap(cmap=sim_5_c)
 
-def draw(map,svg=True,name='',cache=True,coul=False):
+def draw(map,svg=True,name='',hide=True,colorbar=False):
     """Affichage de la map sous forme d'une matrice avec la fonction matshow
     svg pour sauvegarder l'image, name pour spécifier un name, affich pour afficher l'image, color pour le code color
     """
@@ -106,16 +106,16 @@ def draw(map,svg=True,name='',cache=True,coul=False):
         elif(mx == 8.0): color = sim_5_c
         else: print(mx,charred)
         
-    if(cache): plt.ioff()         #empêche l'affichage des images
+    if(hide): plt.ioff()         #empêche l'affichage des images
         
     plt.matshow(map.map,cmap=color)
     
-    if(coul): plt.colorbar()     #affiche le code color utilisé
+    if(colorbar): plt.colorbar()     #affiche le code color utilisé
         
     for pompier in map.liste_pompier:     #affiche toute les pompiers avec un carré rouge de 3 pixels
         plt.plot(pompier.x,pompier.y,'rs',markersize=3)
         
-    plt.axis([-0.5,map.taille-0.5,-0.5,map.taille-0.5])     #cadre l'image et cache les axes
+    plt.axis([-0.5,map.taille-0.5,-0.5,map.taille-0.5])     #cadre l'image et hide les axes
     plt.axis('off')
         
     if(svg):
