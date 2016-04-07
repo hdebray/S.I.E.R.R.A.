@@ -13,225 +13,224 @@ import base.cell as cl
 import gui.display as display
 import db.data as db
 from base.fireman import distance
+
     
-
-
-"""
-Création d'une map en combinant deux maps de hauteur (heightmap), 
-générées par un noise de valeur (Value Noise)
-"""
 class Map(object):
     def __init__(self,size):
-        self.size = size
-        self.map = np.zeros([size,size])
-        self.cell_list = []        #liste des cells qui composent la map
-        self.burn_list = []       #liste des cells en train de bruler à chaque itération
-        self.fireman_list = []     #liste des firemans actifs sur la map
-        self.count = 0               #numéro de l'itération au cours de la simulation
+        self.size = size                    #size of the map, the map is always a square
+        self.map = np.zeros([size,size])    #init the matrix to display the map
+        self.cell_list = []                 #list of the cell which compose the map
+        self.burn_list = []                 #list of the cell which are actually burning
+        self.fireman_list = []              #list of active firemen on the man
+        self.count = 0                      #track the number of iterations
         
-        
+    """
+    Create a map by combining 2 heightmap, randomly generated with a 'value noise'
+    """
     def creation(self):
-        """Combine deux heightmap (altitude et humidité), puis construit la map qui en dépend"""
-        alti = self.heightmap()
+        """Combine two heightmap (height and moisture)"""
+        height = self.heightmap()
         forest = self.heightmap()
         for i in range(self.size):
             for j in range(self.size):
-                self.map[i,j] = self.biome(alti,forest,i,j)        #créé la map
+                self.map[i,j] = self.biome(height,forest,i,j)        #create the map
         
                 
     def biome(self,alti,forest,i,j):
-        """Construit la map en combinant les valeurs des deux heightmap"""
+        """Create the map by checking the height and moisture value of every cell"""
         n = 0
-        if(alti[i,j] < 0.3):        #eau
+        if(alti[i,j] < 0.25):        #water
             n = 0
             self.cell_list.append(cl.Cell(j,i,0))
         elif(alti[i,j] > 0.6 and forest[i,j] > 0.5):     #forest
             n = 2
             self.cell_list.append(cl.Cell(j,i,2))
-        elif(alti[i,j] > 0.7 and forest[i,j] < 0.4):     #maison
+        elif(alti[i,j] > 0.6 and forest[i,j] < 0.3):     #town
             n = 3
             self.cell_list.append(cl.Cell(j,i,3))
-        else:               #plaine
+        else:                       #grass
             n = 1
             self.cell_list.append(cl.Cell(j,i,1))
         return n
         
     def heightmap(self,amp=1,freq=1/2.0):
-        """Construit une heightmap en ajoutant successivement des noises de valeurs,
-        à des amplitudes et des fréquences différentes"""
+        """Create a heightmap by adding successive noise value, with differents amplitude and frequencies"""
         noise = np.zeros([self.size,self.size])     #initialisation
-        while(self.size*freq > 1 and amp > 0.01):     #tant que la résolution de la map est supérieur à 1
+        while(self.size*freq > 1 and amp > 0.01):     #while the resolution is greater than 1
             noise += self.calc_noise(self.size*freq) * amp
-            freq *= 0.4     #augmentation de la fréquence
-            amp *= 0.6    #diminution de l'amplitude
+            freq *= 0.4     #augment the frequency
+            amp *= 0.6    #reduce the amplitude
         noise = self.distrib(noise)
         return noise
         
     def calc_noise(self,res):
-        """Calcul un noise de valeur pour une résolution données (size*fréquence).
-        La graine utilisé pour générer le noise white de départ est différente à chaque fois"""
-        perm = np.random.permutation(256)           #table de permutation aléatoire (graine du monde)
-        self.white = self.white_noise(self.size,perm)                #noise white
+        """Calcul a value for a certain resolution (size*freq).
+        A new seed is generated for every noise"""
+        perm = np.random.permutation(256)           #permutation table (world seed)
+        self.white = self.white_noise(self.size,perm)                #white noise
         
         temp = np.zeros([self.size,self.size])
         for i in range(self.size):
             for j in range(self.size):
                 m,n = int(i/res),int(j/res)
-                temp[i][j] = self.smooth(i/res,j/res)      #interpolation lissée du noise white
+                temp[i][j] = self.smooth(i/res,j/res)      #interpolation to smooth the white noise
                 
         return temp
         
     def smooth(self,y,x):
-        """Cette fonction lisse l'interpolation pour avoir un meilleur résultat, en utilisant
-        une interpolation bilinéaire"""
-        x0 = int(x)         #partie entière
-        frac_x = x - x0     #partie fractionnaire
+        """This function is smoothing the white noise, by using a bilinear interpolation 
+        for a better result"""
+        x0 = int(x)         #integer part
+        frac_x = x - x0     #float part
         y0 = int(y)
         frac_y = y - y0
         
         x1 = (x0+1)
         y1 = (y0+1)
-        if(x1 > len(self.white)-1): x1 = len(self.white)-1
+        if(x1 > len(self.white)-1): x1 = len(self.white)-1      #make sure the coord are below the max value
         if(y1 > len(self.white)-1): y1 = len(self.white)-1
         
-        dx1 = self.lerp(frac_x,self.white[y0][x0],self.white[y0][x1])        #interpolation bilinéaire de la valeur du pixel
+        dx1 = self.lerp(frac_x,self.white[y0][x0],self.white[y0][x1])        #bilinear interpolation of the pixel's value
         dx2 = self.lerp(frac_x,self.white[y1][x0],self.white[y1][x1])
         result = self.lerp(frac_y,dx1,dx2)
         return result
         
     def lerp(self,p,a,b):
-        """Interpolation linéaire de la valeur en p, selon la valeur au point a et au point b"""
-        t = (p**2)*(3 - 2*p)          #smooth de l'interpolation, cubique 
-        return a*(1-t) + b*t        #interpolation
+        """Interpolation of the value of point p, based on values of points a and b"""
+        t = (p**2)*(3 - 2*p)            #cubic interpolation, better result than linear 
+        return a*(1-t) + b*t            #interpolation
         
     def white_noise(self,dim,perm):
-        """Génération d'un noise white, selon une graine (table de permutation)"""
+        """Generate a white noise, based on a permutation table"""
         mat = np.zeros([dim,dim])
         for i in range(dim):
             for j in range(dim):
-                mat[i][j] = perm[ (j%256 + perm[i%256]) % 256 ]
+                mat[i][j] = perm[ (j%256 + perm[i%256]) % 256 ]     #pseudo-random value
         return mat
 
     def distrib(self,mat):
-        """Redistribue les valeurs d'une matrice entre 0 et 1"""
+        """Spread the values of a matrix in range [0,1]"""
         mx,mn = np.ceil(np.amax(mat)),np.floor(np.amin(mat))
         result = (mat-mn)/(mx-mn)
         return result
         
         
     """
-    Modification et mise à jour de l'état de la simulation
+    Update the simulation state
     """
     def ini(self,foyer=-1,firemans=-1):
+        """Initialisation of the fire cells and the firemen"""
         if(foyer < 0): foyer = int( np.ceil(self.size/30) )
-        self.johny(foyer)               #allume le feu
+        self.johny(foyer)               #ingnite the fire
         if(firemans < 0): firemans = int( np.ceil(self.size/3) )
-        self.create_fireman(firemans)     #créer les firemans
+        self.create_fireman(firemans)     #create the firemen
         
     def turn(self):
-        if(self.count == 0 and len(self.burn_list) < 1): self.ini()     #initialisation si cela n'a pas été fait
+        """Calculate the simulation state on one iteration"""
+        if(self.count == 0 and len(self.burn_list) < 1): self.ini()     #default init
         self.count+= 1
-        k = len(self.burn_list)
+        
+        k = len(self.burn_list)     #we store the length of burn_list, to only update the burned cells already existing
         i = 0
         while(i < k):
             if(len(self.burn_list) > 0):
-                cell = self.search(self.burn_list[i].x,self.burn_list[i].y)        #on récupère la cellule qui va être propagé 
+                cell = self.search(self.burn_list[i].x,self.burn_list[i].y)        #store the cell to update
                 cell.propagation(self)
-                if(cell.charred == True): k -= 1      #si la cell vient d'être charrednisé, la size de burn_list a diminué
+                if(cell.charred == True): k -= 1      #if the cell is charred, reduce k
                 i += 1
-                
-        display.draw(self,name='a')
+        display.draw(self,name='a')     #display the sim state after the fire expansion
         
         for frmn in self.fireman_list:
             frmn.update(self)
-            if(frmn.hp <= 0): self.fireman_list.remove(frmn)         #le fireman est mort
-            
-        display.draw(self,name='b')
+            if(frmn.hp <= 0): self.fireman_list.remove(frmn)         #the fireman is dead
+        display.draw(self,name='b')     #display the sim state after the firemen acted
             
     
     def johny(self,n):
         """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! """
-        for i in range(n):      #n: namebre de foyer de feu au début de la simulation
+        for i in range(n):      #n: number of starting burning cell on initialisation
             b = True
-            while(b):           #boucle de test pour ne pas bruler l'eau
+            while(b):           #test loop to be sure water doesn't burn
                 b = False
                 x,y = rnd.randint(0,self.size-1),rnd.randint(0,self.size-1)
                 cell = self.search(x,y)
-                if(cell.nat == 0): b = True
+                if(cell.nat == 0): b = True     #continue looping if it's water
             cell.state = 1
             self.burn_list.append(cell)
             
             
     def create_fireman(self,n):
-        for i in range(n):      #n: namebre de firemans au début de la simulation
-            name = "august"+str(i)
+        """Create n Fireman objects, and store them is fireman_list"""
+        for i in range(n):      #n: number of starting firemen on initialisation
+            name = "august"+str(i)      #one of them will be called 'august1'...
             b = True
-            while(b):           #boucle de test pour ne pas mettre un fireman dans l'eau
+            while(b):           #test loop to be sure fireman doesn't spawn in water
                 b = False
                 x,y = rnd.randint(0,self.size-1),rnd.randint(0,self.size-1)
                 cell = self.search(x,y)
                 if(cell.nat == 0 or cell.state > 0): b = True
-            self.fireman_list.append(frm.Fireman(name,x,y))     #créer un nouveau fireman et l'ajoute à la liste
+            self.fireman_list.append(frm.Fireman(name,x,y))     #create a fireman and add it to fireman_list
         
         
     def search(self,x,y):
-        """Cette fonction search une cell aux coordonnées x et y dans une liste d'objets Cell"""
+        """Search the Cell object with the right coordinates, and return this object"""
         result = None
         for cell in self.cell_list:
             if(cell.x == x and cell.y == y): result = cell
         return result
         
     def calc_mat(self):
-        """Cette fonction recalce la matrice self.map en fonction des cells dans la cell_list.
-        Elle n'est normalement utilisé que pour l'displayfichage"""
-        self.map = np.zeros([self.size,self.size])
-        for cell in self.burn_list:       #on displayfecte d'abord les cells en feu
+        """Calculate the matrix's cells value based on their corresponding Cell object.
+        Only used to display"""
+        self.map = np.zeros([self.size,self.size])      #init
+        for cell in self.burn_list:       #first set the burning cells
             i,j = cell.y,cell.x
-            self.map[i,j] = 3 + cell.state
+            self.map[i,j] = 3 + cell.state      #value in range [4,8]
         
-        for cell in self.cell_list:
+        for cell in self.cell_list:     #then the 'normal' cells
             i,j = cell.y,cell.x
-            if(self.map[i,j] == 0):       #si une valeur n'a pas déja été displayfecté
-                    if(cell.charred == True):     #si c'est une cell charred, on lui displayfecte le maximum +1 (pour l'displayfichage)
-                        self.map[i,j] = -1
+            if(self.map[i,j] == 0):       #if it's not on fire, value will still be 0
+                    if(cell.charred == True):
+                        self.map[i,j] = -1      #Value -1 for destroyed cells
                     else:
-                        self.map[i,j] = cell.nat      #sinon, on displayfecte le chiffre correspondant à la nature
+                        self.map[i,j] = cell.nat      #Otherwise, value is equal to the nature (0 -> 3)
         
         
     def save(self):
-        """Sauvegarde l'état actuel de la matrice"""
-        db.save_map(self.cell_list,self.count)
-        db.save_fireman(self.fireman_list,self.count)
+        """Save the simulation state and the iterations count"""
+        db.save_map(self.cell_list,self.fireman_list,self.count)
         
     def construct(self,num):
+        """Recreate the simulation state, based on the cell_list and fire_man list, of the iteration 'n' """
         self.cell_list = []
         self.burn_list = []
         
-        result = db.get_cell(num)
+        result = db.get_cell(num)       #collect every cells
         for line in result:
             cell = cl.Cell(line[0],line[1],line[2],line[3],line[4])
-            self.burn_list.append(cell)
-            if(line[3] > 0 and line[4] == False):     #intensité > 0 et charred = Fasle
+            self.cell_list.append(cell)
+            if(line[3] > 0 and line[4] == False):     #intensity > 0 and charred = False
                 self.burn_list.append(cell)
                 
         self.fireman_list = []
         
-        result = db.recup_fireman(num)
+        result = db.recup_fireman(num)  #collect every fireman
         for line in result:
             frmp = frm.Fireman(line[0],line[1],line[2],line[3])
             self.fireman_list.append(frmp)
             
     def center(self,burn_list):
+        x_center,y_center = 0,0
         for cell in burn_list:
-            x_center+=burnlist[cell][0]/len(burn_list)
-            y_center+=burnlist[cell][1]/len(burn_list)
-            cent=(x_center,y_center)
+            x_center+=burn_list[cell][0]/len(burn_list)
+            y_center+=burn_list[cell][1]/len(burn_list)
+            cent=[x_center,y_center]
         return cent
             
-    def radius(self,centroide,burn_list):
-        centroide=self.center(burn_list)
-            dist=0
+    def radius(self,burn_list):
+        cent=self.center(burn_list)
+        dist=0
         for cell in burn_list:
             dist=max(distance(cent[0],cent[1],burn_list[cell][0],burn_list[cell][1]))
         return dist
-        
+            

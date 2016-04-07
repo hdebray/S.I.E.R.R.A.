@@ -7,22 +7,22 @@ import numpy as np
 import random as rdm
 
 def distance(x1,y1,x2,y2):  
-    """Calcul de la distance euclidienne entre deux points 1 et 2"""
+    """Return the euclidian distance between points 1 and 2"""
     return np.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 
 class Fireman(object):
     def __init__(self,name,x,y):
-        self.name = str(name)     #le name sertd'identifiant
-        self.x = x              #coordonnées
+        self.name = str(name)     #the name is equal to an id
+        self.x = x
         self.y = y
-        self.hp = 20
+        self.hp = 20        #number of hit points. if hp = 0, the fireman dies
         
     def __str__(self):
         return "{}".format(self.name)
         
-    def movement(self,other,n):
-        """Déplacement d'un fireman vers une other cell"""
+    def movement(self,other,n=1):
+        """Movement of the fireman to an other cell, by n step(s)"""
         if self.x < other.x and self.y < other.y:
             self.x,self.y = self.x+n,self.y+n
         elif self.x < other.x and self.y > other.y:
@@ -39,85 +39,93 @@ class Fireman(object):
             self.y = self.y-n
         elif self.x == other.x and self.y < other.y:
             self.y = self.y+n
-        
+            
+    def check_bounds(self,maximum):
+        """Make sure that the fireman can't go outside the map"""
+        if(self.x < 0): self.x = 0
+        if(self.x > maximum): self.x = maximum
+        if(self.y < 0): self.y = 0
+        if(self.y > maximum): self.y = maximum
         
     def update(self,map):
-        """Méthode principale du fireman, pour appeler les other fonctions"""
-        own_cell = map.search(self.x,self.y)     #cell qui correspond à la position du fireman
-        near = own_cell.get_near(map)               #list des cells nearacentes à squaree du fireman
+        """Main function of the fireman, to call other functions"""
+        own_cell = map.search(self.x,self.y)     #cell corresponding to fireman's position
+        near = own_cell.get_near(map)               #cells near the fireman
         
-        goal = self.search_fire(map.burn_list)        #search les cells qui burningnt
+        goal = self.search_fire(map.burn_list)        #search the burning cells
         if(goal != None):
-            movement = True
-            for cell in near:        #on search si le fireman est à coté du fire
-                if(cell.x == goal.x and cell.y == goal.y): movement = False
+            can_move = True
+            for cell in near:        #if the fireman is already near a burning cell
+                if(cell.x == goal.x and cell.y == goal.y): can_move = False
                 
-            if(movement):
-                self.go_to_fire(own_cell,near,goal)        #le fireman se déplace
+            if(can_move):
+                self.go_to_fire(own_cell,near,goal)         #fireman move
+                self.check_bounds(map.size-1)               #and stay in the grid
+                
             else:
-                self.put_out_fire(own_cell,near,map)        #le fireman éteint le fire
+                self.put_out_fire(own_cell,near,map)        #fireman put out the fire
 
         
     def search_fire(self,burn_list):
-        """Cherche la cell qui burning la plus proche du fireman, selon la distance entre chaque cell qui burning"""
+        """Search the closest burning cell, based on the fireman's distance with every burning cells"""
         dist = float('inf')
         cell = None
         
-        for square in burn_list:        #parcourt la list des cells en fire
+        for square in burn_list:
             temp = distance(self.x,self.y, square.x,square.y)
-            if temp < dist:     #si la distance est plus courte, le fireman va choisir cette cell
+            if temp < dist:     #if the distance is shorter, the fireman will choose that cell
                 dist = temp
                 cell = square
         return cell
             
             
     def go_to_fire(self,cell,list_near,cell_fire):
-        """Gère le déplacement du fireman en fonction de sa position et de la position de la cell en fire"""
-        if(cell.state > 0): self.hp -= cell.state                #le fireman est brulé d'un montant égal à l'intensité
+        """Manage the movement of the fireman, based on his own position and his objective"""
+        if(cell.state > 0): self.hp -= cell.state        #fireman burned by the intensity of the fire
         
-        if(cell.state > 0 and cell.charred != True):       #si la cell du fireman est en fire, il s'en émap
+        if(cell.state > 0 and cell.charred != True):       #escape the the fire, to not get hurt
             escape = cell
             for square in list_near:
-                if square.state < escape.state:      #on search la cell à l'intensité la plus faible
+                if square.state < escape.state:      #search the near cell with the lowest intensity
                     escape = square
-            self.movement(escape)             #déplacement en direction de l'escape
+            self.movement(escape)             #move to the escape
         
         else:
-            move = True        #booléen pour savoir si fireman va mover ou non
+            move = True        #boolean to check if the fireman can move
             for square in list_near:
-                if(cell_fire.x == square.x and cell_fire.y == square.y): move = False     #si la cell goal est nearacentes, le fireman ne se déplace pas
+                if(cell_fire.x == square.x and cell_fire.y == square.y): move = False     #fireman doesn't need to move if his goal is near
             
             if(move):
                 if distance(self.x,self.y,cell_fire.x,cell_fire.y)>=4:
-                    self.movement(cell_fire,2)     #déplacement en direction du fire en courant si on est loin
+                    self.movement(cell_fire,2)     #run to the fire if it's far
                 else:
-                    self.movement(cell_fire,1)     #déplacement en direction du fire en marchant si on est proche
+                    self.movement(cell_fire,1)     #otherwise, move slowly
                     
                     
     def put_out_fire(self,cell,list_near,map):
-        """Calcul les cells nearacentes qui peuvent être éteintes à partir de la position actuelle du fireman"""
-        burning = []      #list des squareules nearacentes qui burningnt
+        """Calculate the near cells  where the fire must disappear"""
+        burning = []      #list of burning cells near the fireman
         for square in list_near:
-            if(square.state > 0 and square.charred == False):      #si la cell burning, mais n'est pas cramé
+            if(square.state > 0 and square.charred == False):      #if it's burning, but not charred yet
                 burning.append(square)
                 
-        if(len(burning) <= 3):        #si il y a moins de 3 cells en fire autour
+        if(len(burning) <= 3):        #if there is less than 3 burning cells
             for square in burning:
-                square.state -= 2              #on éteint la cell
-                if(square.state < 0): square.state = 0  #l'intensité du fire n'est pas inférieure à 0
-                if(square.state == 0): map.burn_list.remove(square)
+                square.state -= 2              #put out the fire
+                if(square.state < 0): square.state = 0       #intensity can't go below 0
+                if(square.state == 0): map.burn_list.remove(square)     #remove the cell from the burn_list
                 
         else:
             k=len(burning)
             i=0
             while i < k:
-                r = rdm.randint(0,len(burning)-1)       #choix aléatoire de la cell à éteindre, parmis squarees disponibles
+                r = rdm.randint(0,len(burning)-1)       #randomly choose the cell, among the availables
                 square = burning[r]
                 square.state -= 2
                 if(square.state < 0): square.state = 0
                 if(square.state == 0):
-                    map.burn_list.remove(square)
-                    burning.remove(burning[r])      #on retire la cell qui vient d'etre éteinte
+                    map.burn_list.remove(square)        #remove the cell from burn_list if it's no more on fire
+                    burning.remove(burning[r])          #cell no more available
                     
                 i+=1
                 k=len(burning)
