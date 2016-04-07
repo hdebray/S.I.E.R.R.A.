@@ -10,13 +10,13 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as col
 import matplotlib.cm as cm
 
-import warnings as war      #permet de gérer les warning comme des error
+import warnings as war      #allow to filter warnings
 import os
 
 war.filterwarnings("ignore",category=RuntimeWarning)
 
 """
-Création d'une map de color continue linéaire, à partir d'une série de valeurs RGB
+Create a linear colormap, with RGB values
 """
 color_map = { 'red': ((0.0, 0.007, 0.007),
                       (0.25, 0.035, 0.035),
@@ -49,92 +49,101 @@ color_map = { 'red': ((0.0, 0.007, 0.007),
 earth_color = col.LinearSegmentedColormap('earth',color_map,N=256)
 
 """
-Création d'une map de colors finies par valeurs discrètes, en code hexadécimal
+Create a discrete colormap, with hexa color codes
 """
-cpool = ['#2a0d03','#0085ff', '#00e503', '#4e8539', '#b6aba2', 
+cpool = ['#2a0d03','#318fe5', '#51c353', '#4e8539', '#b6aba2', 
          '#dc6741', '#d44212', '#a9340e', '#7f270a', '#541a07']
          
-"""Sauvegarde des colors de simulation, une par intensité maximale sur la map"""
-sim_0 = col.ListedColormap(cpool[1:5], 'indexed')       #pas de feu
-cm.register_cmap(cmap=sim_0)
-sim_1 = col.ListedColormap(cpool[1:6], 'indexed')       #intensité max = 1
-cm.register_cmap(cmap=sim_1)
-sim_2 = col.ListedColormap(cpool[1:7], 'indexed')       #intensité max = 2
-cm.register_cmap(cmap=sim_2)
-sim_3 = col.ListedColormap(cpool[1:8], 'indexed')       #intensité max = 3
-cm.register_cmap(cmap=sim_3)
-sim_4 = col.ListedColormap(cpool[1:9], 'indexed')       #intensité max = 4
-cm.register_cmap(cmap=sim_4)
-sim_5 = col.ListedColormap(cpool[1:10], 'indexed')       #intensité max = 5
-cm.register_cmap(cmap=sim_5)
 
-"""Couleurs utilisés si il y a des cases charrednisées"""
-sim_0_c = col.ListedColormap(cpool[0:5], 'indexed')
-cm.register_cmap(cmap=sim_0_c)
-sim_1_c = col.ListedColormap(cpool[0:6], 'indexed')
-cm.register_cmap(cmap=sim_1_c)
-sim_2_c = col.ListedColormap(cpool[0:7], 'indexed')
-cm.register_cmap(cmap=sim_2_c)
-sim_3_c = col.ListedColormap(cpool[0:8], 'indexed')
-cm.register_cmap(cmap=sim_3_c)
-sim_4_c = col.ListedColormap(cpool[0:9], 'indexed')
-cm.register_cmap(cmap=sim_4_c)
-sim_5_c = col.ListedColormap(cpool[0:10], 'indexed')
-cm.register_cmap(cmap=sim_5_c)
+
+#"""Sauvegarde des colors de simulation, une par intensité maximale sur la map"""
+#sim_0 = col.ListedColormap(cpool[1:5], 'indexed')       #pas de feu
+#cm.register_cmap(cmap=sim_0)
+#sim_1 = col.ListedColormap(cpool[1:6], 'indexed')       #intensité max = 1
+#cm.register_cmap(cmap=sim_1)
+#sim_2 = col.ListedColormap(cpool[1:7], 'indexed')       #intensité max = 2
+#cm.register_cmap(cmap=sim_2)
+#sim_3 = col.ListedColormap(cpool[1:8], 'indexed')       #intensité max = 3
+#cm.register_cmap(cmap=sim_3)
+#sim_4 = col.ListedColormap(cpool[1:9], 'indexed')       #intensité max = 4
+#cm.register_cmap(cmap=sim_4)
+#sim_5 = col.ListedColormap(cpool[1:10], 'indexed')       #intensité max = 5
+#cm.register_cmap(cmap=sim_5)
+#
+#"""Couleurs utilisés si il y a des cases charrednisées"""
+#sim_0_c = col.ListedColormap(cpool[0:5], 'indexed')
+#cm.register_cmap(cmap=sim_0_c)
+#sim_1_c = col.ListedColormap(cpool[0:6], 'indexed')
+#cm.register_cmap(cmap=sim_1_c)
+#sim_2_c = col.ListedColormap(cpool[0:7], 'indexed')
+#cm.register_cmap(cmap=sim_2_c)
+#sim_3_c = col.ListedColormap(cpool[0:8], 'indexed')
+#cm.register_cmap(cmap=sim_3_c)
+#sim_4_c = col.ListedColormap(cpool[0:9], 'indexed')
+#cm.register_cmap(cmap=sim_4_c)
+#sim_5_c = col.ListedColormap(cpool[0:10], 'indexed')
+#cm.register_cmap(cmap=sim_5_c)
+
 
 def draw(map,svg=True,name='',hide=True,colorbar=False):
-    """Affichage de la map sous forme d'une matrice avec la fonction matshow
-    svg pour sauvegarder l'image, name pour spécifier un name, affich pour afficher l'image, color pour le code color
+    """Display the map with the matrix of values.
+    svg to save the image, name for specific name, hide to hide the image, colorbar to show the colorbar
     """
-    charred = map.calc_mat()      #mise à jour de la matrice en fonction des cases
-    mx = np.amax(map.map)       #maximum de valeur dans la matrice, pour déterminer la map de color
-    mn = np.amin(map.map)       #minimum de valeur, pour identifier les cases charrednisées
+    map.calc_mat()      #update the matrix
+    mx = int( np.amax(map.map) )      #max and min values of the matrix
+    mn = int( np.amin(map.map) )      #to determine the colormap used
         
-    if(mn == 0):            #on détermine les colors utilisés pour afficher le terrain
-        if(mx <= 3.0): color = sim_0
-        elif(mx == 4.0): color = sim_1
-        elif(mx == 5.0): color = sim_2
-        elif(mx == 6.0): color = sim_3
-        elif(mx == 7.0): color = sim_4
-        elif(mx == 8.0): color = sim_5
-    else:                   #on utilise les colors spécifiques au cas "charrednisé"
-        if(mx <= 3.0): color = sim_0_c
-        elif(mx == 4.0): color = sim_1_c
-        elif(mx == 5.0): color = sim_2_c
-        elif(mx == 6.0): color = sim_3_c
-        elif(mx == 7.0): color = sim_4_c
-        elif(mx == 8.0): color = sim_5_c
-        else: print(mx,charred)
         
-    if(hide): plt.ioff()         #empêche l'affichage des images
+#    if(mn == 0):            #on détermine les colors utilisés pour afficher le terrain
+#        if(mx <= 3.0): color = sim_0
+#        elif(mx == 4.0): color = sim_1
+#        elif(mx == 5.0): color = sim_2
+#        elif(mx == 6.0): color = sim_3
+#        elif(mx == 7.0): color = sim_4
+#        elif(mx == 8.0): color = sim_5
+#    else:                   #on utilise les colors spécifiques au cas "charrednisé"
+#        if(mx <= 3.0): color = sim_0_c
+#        elif(mx == 4.0): color = sim_1_c
+#        elif(mx == 5.0): color = sim_2_c
+#        elif(mx == 6.0): color = sim_3_c
+#        elif(mx == 7.0): color = sim_4_c
+#        elif(mx == 8.0): color = sim_5_c
+    
+    
+    simu_color = col.ListedColormap(cpool[(mn+1):(mx+2)], 'indexed')
+    cm.register_cmap(cmap=simu_color)
+    color = simu_color
+        
+    if(hide): plt.ioff()         #hide the poping windows of python
+    else: plt.ion()
         
     plt.matshow(map.map,cmap=color)
     
-    if(colorbar): plt.colorbar()     #affiche le code color utilisé
+    if(colorbar): plt.colorbar()     #show the colormap used to draw the matrix
         
-    for pompier in map.fireman_list:     #affiche toute les pompiers avec un carré rouge de 3 pixels
+    for pompier in map.fireman_list:     #display firemen with a red square, 3 pixel wide
         plt.plot(pompier.x,pompier.y,'rs',markersize=3)
         
-    plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #cadre l'image et hide les axes
-    plt.axis('off')
+    plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #resize the image
+    plt.axis('off')                                     #hide the axis
         
     if(svg):
-        txt = "images/img" + str(map.count+100) + name + ".png"      #name de l'image, +100 pour éviter les problèmes d'indices (conversion)
+        txt = "images/img" + str(map.count+100) + name + ".png"      #image's name, +100 for index problems (conversion)
         plt.savefig(txt,dpi=100,bbox_inches='tight',pad_inches=0)
 
 
 def compile(delete=False):
-    """Permet de convertir la liste d'images en un gif, puis supprime les images créé
-    Il est nécéssaire d'installer Imagemagick pour convertir, ainsi que de sauvegarder les png à la racine
+    """Convert every png files in a single gif, with an option to delete after the conversion is done
+    YOU SHALL HAVE Imagemagick INSTALLED TO CONVERT THE PNGs INTO A GIF !
     """
     
-    os.system('convert -delay 50 -loop 0 images/*.png images/simulation.gif')
+    os.system('convert -delay 40 -loop 0 images/*.png images/simulation.gif')
     
-    if(delete):    # destruction des images
+    if(delete):    # destroy the images
         directory = 'images/'
         for file in os.listdir(directory):
-            if(file[-3:] == 'png'):
+            if(file[-3:] == 'png'):     #if the file have a 'png' extension
                 path = directory+str(file)
-                os.remove(path)
+                os.remove(path)         #remove it
     
     
