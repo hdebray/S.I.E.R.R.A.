@@ -15,44 +15,45 @@ import gui.display as disp
 
 
 """
-A faire:
--gif avec les images successives
--tester toute les 'briques élémentaires'
+TO DO list:
+-test every functions independantly
+-create a beautiful interface (NOT Tkinter!)
+-implement functions to save and restore the simulation state on db
 """
 
 
-"""Test sur l'objet Fireman"""
-gus = frm.Fireman('Augustin',0,0)       #créé un fireman
+"""Tests of the Fireman class"""
+gus = frm.Fireman('Augustin',0,0)       #create a fireman
 #print(gus)
 
-"""Test sur l'objet Case"""
+"""Tests of the Cell class"""
 
 
-"""Test sur l'objet Map"""
-map = map.Map(10)     #initialise une map (ne pas dépasser une size de 500, sinon calcul trop long)
+"""Tests of the Map class"""
+map = map.Map(30)     #init a map (should be size < 500, or take a coffee while waiting for the result)
 
-#bruit = map.heightmap()      #test sur la création d'un seul bruit de valeur
-#plt.matshow(bruit,cmap='gray')
+#height = map.heightmap()      #test the creation of a heightmap
+#plt.matshow(height,cmap='gray')
 
-map.creation()        #création de la map de simulation
-map.ini()             #initialisation du nombre de feu, et du nombre de firemans
+map.creation()        #create the map for the simulation
+map.ini()             #initiate the number of burning cells, and firemans
 
-#for p in map.liste_fireman:      #display les firemans
+#for p in map.liste_fireman:      #display the firemen
 #    print(p)
 
-#for c in map.liste_cell:     #display les objets Cases de la simulation
+#for c in map.liste_cell:     #display every Case object
 #    print(c)
     
-#for b in map.burn_list:     #display les objets Cases qui sont en feu
+#for b in map.burn_list:     #display every Case object on fire
 #    print(b)
 
 
-disp.draw(map)       #dispfichage de l'état initial
+disp.draw(map)       #display the initial state of the simulation
 i=0
-while(len(map.burn_list) > 0):      #réalise deux turns de simulation
+while(len(map.burn_list) > 0):
     map.turn()
     
     i+=1
-    if(i>4*map.size):break      #ceinture de sécurité
+    if(i>5*map.size):break      #seatbelt, to prevent accidents
 
-disp.compile(delete=True)       #transforme les images en gif   !! Imagemagick nécéssaire !!
+disp.compile(delete=True)       #transform png to gif   !! Imagemagick necessary !!
