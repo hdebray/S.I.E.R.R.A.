@@ -8,50 +8,22 @@ Created on Wed Mar 30 15:10:34 2016
 
 import sqlite3 as sql
 
-def save_map(cell_list,count):
+def save_map(cell_list,fireman_list,count):
     """
-    Sauvegarde l'état de la simulation grâce à la liste des cases et leurs attributs, ainsi que le numéro de 
-    l'itération lors de la sauvegarde
+    Save the simulation state with the list of Cell objects and Fireman objects, as well as the iteration 
+    count at the moment of the save
     """
     try:
-        con = sql.connect('bdd/simu.db')
+        con = sql.connect('db/simu.db')
         cur = con.cursor()
         
-        cur.execute("CREATE TABLE IF NOT EXISTS cases(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, x INT, y INT, nature INT, etat INT, carbo INT, tour INT)") 
-        
+        cur.execute("CREATE TABLE IF NOT EXISTS cells(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, x INT, y INT, nature INT, state INT, char INT, count INT)") 
         for case in cell_list:
-            cur.execute("INSERT INTO cases(x,y,nature,etat,carbo,tour) VALUES(?,?,?,?,?,?)",(case.x,case.y,case.nat,case.etat,case.carbo,count))
+            cur.execute("INSERT INTO cells(x,y,nature,state,char,count) VALUES(?,?,?,?,?,?)",(case.x,case.y,case.nat,case.state,case.charred,count))
         
-        con.commit()
-        
-    except sql.OperationalError:
-        print('Unable to connect to database')
-        
-    except Exception as e:
-        print("Erreur")
-        con.rollback()
-        raise e
-        
-    except(sql.Error):
-        print("Connection error")
-        
-    finally:
-        cur.close()
-        con.close()
-        
-def save_fireman(fireman_list,count):
-    """
-    Sauvegarde l'état de la simulation grâce à la liste des firemiers, ainsi que le numéro de l'itération 
-    lors de la sauvegarde
-    """
-    try:
-        con = sql.connect('bdd/simu.db')
-        cur = con.cursor()
-        
-        cur.execute("CREATE TABLE IF NOT EXISTS firemier(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, nom STRING, x INT, y INT, pv INT, tour INT)") 
-        
-        for firem in fireman_list:
-            cur.execute("INSERT INTO cases(nom,x,y,pv,tour) VALUES(?,?,?,?,?,?)",(firem.nom,firem.x,firem.y,firem.pv,count))
+        cur.execute("CREATE TABLE IF NOT EXISTS firemen(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, name STRING, x INT, y INT, hp INT, count INT)") 
+        for frman in fireman_list:
+            cur.execute("INSERT INTO firemen(name,x,y,hp,count) VALUES(?,?,?,?,?,?)",(frman.name,frman.x,frman.y,frman.hp,count))
         
         con.commit()
         
@@ -73,10 +45,10 @@ def save_fireman(fireman_list,count):
 def get_cell(value):
     """fonction pour recupérer l'état de la simulation à une certaine itération"""
     try:
-        con = sql.connect('bdd/simu.db')
+        con = sql.connect('db/simu.db')
         cur = con.cursor()
         
-        cur.execute("SELECT x,y,nature,etat,carbo FROM case WHERE tour=?",(value,))
+        cur.execute("SELECT x,y,nature,state,char FROM cells WHERE count=?",(value,))
         
         result = cur.fetchall()
         return result
@@ -99,10 +71,10 @@ def get_cell(value):
 def get_fireman(value):
     """fonction pour recupérer l'état de la simulation à une certaine itération"""
     try:
-        con = sql.connect('bdd/simu.db')
+        con = sql.connect('db/simu.db')
         cur = con.cursor()
         
-        cur.execute("SELECT nom,x,y,pv FROM firemier WHERE tour=?",(value,))
+        cur.execute("SELECT name,x,y,hp FROM firemen WHERE count=?",(value,))
         
         result = cur.fetchall()
         return result
