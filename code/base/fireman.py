@@ -54,16 +54,9 @@ class Fireman(object):
         
         goal = self.search_fire(map.burn_list)        #search the burning cells
         if(goal != None):
-            can_move = True
-            for cell in near:        #if the fireman is already near a burning cell
-                if(cell.x == goal.x and cell.y == goal.y): can_move = False
-                
-            if(can_move):
-                self.go_to_fire(own_cell,near,goal)         #fireman move
-                self.check_bounds(map.size-1)               #and stay in the grid
-                
-            else:
-                self.put_out_fire(own_cell,near,map)        #fireman put out the fire
+            self.go_to_fire(own_cell,near,goal)         #fireman move
+            self.check_bounds(map.size-1)               #and stay in the grid
+            self.put_out_fire(own_cell,near,map)        #fireman put out the fire
 
         
     def search_fire(self,burn_list):
@@ -81,7 +74,11 @@ class Fireman(object):
             
     def go_to_fire(self,cell,list_near,cell_fire):
         """Manage the movement of the fireman, based on his own position and his objective"""
-        if(cell.state > 0): self.hp -= cell.state        #fireman burned by the intensity of the fire
+        if(cell.state > 0):        #fireman burned by the intensity of the fire
+            if(cell.charred == True):
+                self.hp -= 0.5          #charred cell only burn by half of the intensity
+            else:
+                self.hp -= cell.state
         
         if(cell.state > 0 and cell.charred != True):       #escape the the fire, to not get hurt
             escape = cell
@@ -96,7 +93,9 @@ class Fireman(object):
                 if(cell_fire.x == square.x and cell_fire.y == square.y): move = False     #fireman doesn't need to move if his goal is near
             
             if(move):
-                if distance(self.x,self.y,cell_fire.x,cell_fire.y)>=4:
+                if(cell.nat == 0):                 #move slowly in water
+                    self.movement(cell_fire,1)
+                elif distance(self.x,self.y,cell_fire.x,cell_fire.y)>=4:
                     self.movement(cell_fire,2)     #run to the fire if it's far
                 else:
                     self.movement(cell_fire,1)     #otherwise, move slowly
