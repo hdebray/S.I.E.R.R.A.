@@ -118,12 +118,12 @@ class Map(object):
     """
     Update the simulation state
     """
-    def ini(self,foyer=-1,firemans=-1):
+    def ini(self,foyer=-1,firemen=-1):
         """Initialisation of the fire cells and the firemen"""
-        if(foyer < 0): foyer = int( np.ceil(self.size/30) )
-        self.johny(foyer)               #ingnite the fire
-        if(firemans < 0): firemans = int( np.ceil(self.size/3) )
-        self.create_fireman(firemans)     #create the firemen
+        if(foyer < 0): foyer = int( np.ceil(self.size/50) )
+        self.johnny(foyer)               #ingnite the fire
+        if(firemen < 0): firemen = int( np.ceil(self.size/3) )
+        self.create_fireman(firemen)     #create the firemen
         
     def turn(self):
         """Calculate the simulation state on one iteration"""
@@ -138,15 +138,20 @@ class Map(object):
                 cell.propagation(self)
                 if(cell.charred == True): k -= 1      #if the cell is charred, reduce k
                 i += 1
+                
         display.draw(self,name='a')     #display the sim state after the fire expansion
         
+        txt = []            #list of textual informations
         for frmn in self.fireman_list:
             frmn.update(self)
-            if(frmn.hp <= 0): self.fireman_list.remove(frmn)         #the fireman is dead
-        display.draw(self,name='b')     #display the sim state after the firemen acted
+            if(frmn.hp <= 0):
+                self.fireman_list.remove(frmn)         #the fireman is dead
+                txt.append(frmn.name+" est mort")
+                
+        display.draw(self,name='b',text=txt)     #display the sim state after the firemen acted
             
     
-    def johny(self,n):
+    def johnny(self,n):
         """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! """
         for i in range(n):      #n: number of starting burning cell on initialisation
             b = True
@@ -224,7 +229,7 @@ class Map(object):
         for cell in burn_list:
             x_center+=burn_list[cell][0]/len(burn_list)
             y_center+=burn_list[cell][1]/len(burn_list)
-            cent=[x_center,y_center]
+        cent=[x_center,y_center]
         return cent
             
     def radius(self,burn_list):
