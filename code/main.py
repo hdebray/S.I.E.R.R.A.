@@ -19,6 +19,8 @@ TO DO list:
 -test every functions independantly
 -create a beautiful interface (NOT Tkinter!)
 -implement functions to save and restore the simulation state on db
+-implement wind to change propagation
+-change the display when many fireman are on the same cell
 """
 
 
@@ -30,7 +32,7 @@ gus = frm.Fireman('Augustin',0,0)       #create a fireman
 
 
 """Tests of the Map class"""
-map = map.Map(30)     #init a map (should be size < 500, or take a coffee while waiting for the result)
+map = map.Map(50)     #init a map (should be size<500, or take a coffee while waiting for the result)
 
 #height = map.heightmap()      #test the creation of a heightmap
 #plt.matshow(height,cmap='gray')
@@ -50,7 +52,7 @@ map.ini()             #initiate the number of burning cells, and firemans
 
 disp.draw(map)       #display the initial state of the simulation
 i=0
-while(len(map.burn_list) > 0):
+while(len(map.burn_list) > 0 and len(map.fireman_list) > 0):
     map.turn()
     
     i+=1
