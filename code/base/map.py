@@ -23,7 +23,6 @@ class Map(object):
         self.burn_list = []                 #list of the cell which are actually burning
         self.fireman_list = []              #list of active firemen on the man
         self.count = 0                      #track the number of iterations
-        self.wind = 0                       #direction of the wind
         
     """
     Create a map by combining 2 heightmap, randomly generated with a 'value noise'
@@ -140,8 +139,8 @@ class Map(object):
                 i += 1
         
         txt = []            #list of textual informations
-        self.call()
-        disp.draw(self)
+        plots = self.call()
+        disp.draw(self,dots=plots)
 #        for frmn in self.fireman_list:
 #            #frmn.update(self)
 #            if(frmn.hp <= 0):
@@ -285,15 +284,24 @@ class Map(object):
         interval=int(perimeter/frm_nbr)
         temp=self.hemicycles(wrp)
         left_cordon,right_cordon=temp[0],temp[1]
+        highest_lft_cord=self.search(0,0)
+        for cell in left_cordon:
+            if cell.y>=highest_lft_cord.y:
+                highest_lft_cord=cell
+        highest_rght_cord=self.search(0,0)
+        for cell in right_cordon:
+            if cell.y>=highest_rght_cord.y:
+                highest_rght_cord=cell
+            
             
         cord=[]
-        cord.append(left_cordon[0])    
+        cord.append(highest_lft_cord)    
         for leftcell in left_cordon:
-            if frm.distance(leftcell.x,leftcell.y,left_cordon[-1].x,left_cordon[-1].y)>=interval:
+            if frm.distance(leftcell.x,leftcell.y,cord[-1].x,cord[-1].y)>=interval:
                 cord.append(leftcell)
-        cord.append(right_cordon[0]) 
+        cord.append(highest_rght_cord) 
         for rightcell in right_cordon:
-            if frm.distance(rightcell.x,rightcell.y,right_cordon[-1].x,right_cordon[-1].y)>=interval:
+            if frm.distance(rightcell.x,rightcell.y,cord[-1].x,cord[-1].y)>=interval:
                 cord.append(rightcell)
         return cord   
         
@@ -323,3 +331,7 @@ class Map(object):
             
             frman_available.remove(frman)
             
+        return cordon_frm
+    def state (self):
+        
+    def clusters(self,state)
