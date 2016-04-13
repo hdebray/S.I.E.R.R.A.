@@ -159,3 +159,10 @@ class Cell(object):
             self.state = 1
             map.burn_list.remove(self)      #burned cells are removed form the burn_list
             
+    def in_fire(self):
+        Fire=False
+        if self.state>0 and self.state<=5:
+            Fire=True
+        return Fire
+            
+            
