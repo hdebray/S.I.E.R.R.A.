@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import PyQt4.QtGui as qtg
 
-import base.map as map
+import base.map as mp
 import base.cell as cl
 import base.fireman as frm
 import gui.display as disp
@@ -53,6 +53,18 @@ gus = frm.Fireman('Augustin',0,0)       #create a fireman
     
 
 if __name__=='__main__':
-    app = qtg.QApplication(sys.argv)
-    sierra = disp.Window()
-    sys.exit(app.exec_())
+#    app = qtg.QApplication(sys.argv)
+#    sierra = disp.Window()
+#    sys.exit(app.exec_())
+     map = mp.Map(50)
+     map.creation()
+     map.ini()
+     disp.draw(map)
+        
+     i=0
+     while(len(map.burn_list) > 0 and len(map.fireman_list) > 0):
+        map.turn()
+#        draw(map,notif=text)
+            
+        i+=1
+        if(i>5*map.size):break      #seatbelt, to prevent accidents
