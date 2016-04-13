@@ -14,15 +14,13 @@ import base.map as mp
 import base.cell as cl
 import base.fireman as frm
 import gui.display as disp
+import db.data as db
 
 
 """
 TO DO list:
 -test every functions independantly
--create a beautiful interface (NOT Tkinter!)
 -implement functions to save and restore the simulation state on db
--implement wind to change propagation
--change the display when many fireman are on the same cell
 """
 
 
@@ -51,6 +49,19 @@ gus = frm.Fireman('Augustin',0,0)       #create a fireman
 #for b in map.burn_list:     #display every Case object on fire
 #    print(b)
     
+    
+"""Tests of the database functions"""
+#map = mp.Map(30)
+#map.creation()
+#map.ini()
+#
+#disp.draw(map,hide=False)
+#db.reset()
+#map.save()
+#
+#map.construct(0)
+#disp.draw(map,hide=False,name='constructed')
+
 
 if __name__=='__main__':
     app = qtg.QApplication(sys.argv)
@@ -58,13 +69,14 @@ if __name__=='__main__':
     sys.exit(app.exec_())
 #     map = mp.Map(50)
 #     map.creation()
-#     map.ini(firemen=1)
+#     map.ini()
 #     disp.draw(map)
 #        
 #     i=0
 #     while(len(map.burn_list) > 0 and len(map.fireman_list) > 0):
 #        map.turn()
-##        draw(map,notif=text)
+#        disp.draw(map)
 #            
 #        i+=1
 #        if(i>5*map.size):break      #seatbelt, to prevent accidents
+     
