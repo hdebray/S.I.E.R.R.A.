@@ -23,6 +23,7 @@ class Map(object):
         self.burn_list = []                 #list of the cell which are actually burning
         self.fireman_list = []              #list of active firemen on the man
         self.count = 0                      #track the number of iterations
+        self.wind = 0
         
     """
     Create a map by combining 2 heightmap, randomly generated with a 'value noise'
@@ -140,7 +141,7 @@ class Map(object):
         
         txt = []            #list of textual informations
         plots = self.call()
-        disp.draw(self,dots=plots)
+        disp.draw(self)
 #        for frmn in self.fireman_list:
 #            #frmn.update(self)
 #            if(frmn.hp <= 0):
@@ -150,6 +151,14 @@ class Map(object):
 #        return txt
                 
         #display.draw(self,name='b',notif=txt)     #display the sim state after the firemen acted
+                
+        test=rnd.randint(0,100)
+        if test <=10:
+            direc=rnd.randint(0,1)
+            if direc == 0:
+                self.wind = (self.wind+1)%8
+            else:
+                self.wind = (self.wind-1)%8
             
     
     def johnny(self,n):
@@ -332,6 +341,8 @@ class Map(object):
             frman_available.remove(frman)
             
         return cordon_frm
-    def state (self):
         
-    def clusters(self,state)
+    def state (self):
+        pass
+    def clusters(self,state):
+        pass

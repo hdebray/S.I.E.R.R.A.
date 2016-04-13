@@ -58,7 +58,7 @@ if __name__=='__main__':
 #    sys.exit(app.exec_())
      map = mp.Map(50)
      map.creation()
-     map.ini()
+     map.ini(firemen=1)
      disp.draw(map)
         
      i=0
