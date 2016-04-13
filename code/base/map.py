@@ -234,30 +234,41 @@ class Map(object):
         for cell in self.burn_list:
             x_center+=cell.x/len(self.burn_list)
             y_center+=cell.y/len(self.burn_list)
-            cent=[int(x_center),int(y_center)]
+        cent=[int(x_center),int(y_center)]
         return cent
             
     def radius(self):                               
         centroide=self.center()
-        dist=0
+        dist_max=0
+        dist_min=0
         for cell in self.burn_list:
-            dist=max(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist)
-        return dist
+            dist_max=max(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_max)
+            dist_min=min(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_min)
+        return dist_max,dist_min
         
     def wrapping(self):
-        wrap=[]
+        wrap_max=[]
+        wrap_min=[]
+        wrap_moy=[]
         centroide=self.center()
-        rad=self.radius()
+        temp_rad=self.radius()
+        rad_max=temp_rad[0]
+        rad_min=temp_rad[1]
+        rad_moy=(rad_max+rad_min)/2
         for cellmap in self.cell_list:
             dist_cent=frm.distance(centroide[0],centroide[1],cellmap.x,cellmap.y)
-            if dist_cent<=rad+1 and dist_cent>=rad-0.1:
-                wrap.append(cellmap)
-        return wrap
+            if dist_cent<=rad_max+1 and dist_cent>=rad_max-0.1:
+                wrap_max.append(cellmap)
+            if dist_cent<=rad_min+1 and dist_cent>=rad_min-0.1:
+                wrap_min.append(cellmap)
+            if dist_cent<=rad_moy+1 and dist_cent>=rad_moy-0.1:
+                wrap_moy.append(cellmap)
+            
+        return wrap_max,wrap_min,wrap_moy
         
-    def hemicycles(self):
+    def hemicycles(self,wrap):
         hemi1=[]
         hemi2=[]
-        wrap=self.wrapping()
         for index in range(len(wrap)):
             if index%2==1:
                 hemi1.append(wrap[index])
@@ -267,13 +278,12 @@ class Map(object):
         
     def cordon(self):
         frm_nbr=len(self.fireman_list)
-        wrp=self.wrapping()
+        temp_wrp=self.wrapping()
+        wrp=temp_wrp[2]
         perimeter=len(wrp)
         interval=int(perimeter/frm_nbr)
-        temp=self.hemicycles()
+        temp=self.hemicycles(wrp)
         left_cordon,right_cordon=temp[0],temp[1]
-        
-        print(len(left_cordon))
             
         cord=[]
         cord.append(left_cordon[0])    
@@ -284,20 +294,31 @@ class Map(object):
         for rightcell in right_cordon:
             if frm.distance(rightcell.x,rightcell.y,right_cordon[-1].x,right_cordon[-1].y)>=interval:
                 cord.append(rightcell)
-        return cord     
+        return cord   
+        
+
         
     def call(self):
-        frman_available=copy.deepcopy(self.fireman_list)
+        frman_available=copy.copy(self.fireman_list)
         cordon_frm=self.cordon()
+        
         for spot in cordon_frm:
-            dist_frman=0
-            for frman in frman_available:
-                dist_frman=min(frm.distance(spot.x,spot.y,frman.x,frman.y),dist_frman)
-                frman_available.remove(frman)
-                cell_frman=self.search(frman.x,frman.y)
-                list_near=cell_frman.get_near(self)
-                frman.go_to_fire(cell_frman,list_near,cell_frman)
-                frman.put_out_fire(cell_frman,list_near,self)
-                
+            dist=float('inf')
+            frman=None
+            for temp_frman in frman_available:
+                temp_dist = frm.distance(spot.x,spot.y,temp_frman.x,temp_frman.y)
+                if temp_dist<dist:
+                    frman=temp_frman
+                    dist=temp_dist
+                    
+            if(frman == None): break
+        
+            cell_frman=self.search(frman.x,frman.y) 
+            list_near=cell_frman.get_near(self)
             
+            frman.go_to_fire(cell_frman,list_near,spot)
+            frman.check_bounds(self.size-1)
+            frman.put_out_fire(cell_frman,list_near,self)
+            
+            frman_available.remove(frman)
             
