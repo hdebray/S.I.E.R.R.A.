@@ -12,11 +12,11 @@ def distance(x1,y1,x2,y2):
 
 
 class Fireman(object):
-    def __init__(self,name,x,y):
+    def __init__(self,name,x,y,hp=20):
         self.name = str(name)     #the name is equal to an id
         self.x = x
         self.y = y
-        self.hp = 20        #number of hit points. if hp = 0, the fireman dies
+        self.hp = hp        #number of hit points. if hp = 0, the fireman dies
         
     def __str__(self):
         return "{}".format(self.name)
