@@ -61,13 +61,14 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
         size = 3 + (frman_display[i][2])
         plt.plot(frman_display[i][0],frman_display[i][1],'rs',markersize=size)
     
-    for i in range(len(notif)):     #display the notifications
+    for i in range(len(notif)):                 #display the notifications
         plt.text(0,i*2, notif[i], color='w')
         
     wind_dir = ['N','NE','E','SE','S','SW','W','NW']  
-    plt.text(0,map.size,'wind: '+ wind_dir[map.wind], color='b')
-    plt.text(map.size/2, map.size, str(len(map.fireman_list)) + ' firemen alive', color='r')
-        
+    if(map.wind_active): plt.text(0,map.size,'wind: '+ wind_dir[map.wind], color='b')       #display wind notification
+    
+    plt.text(map.size/2, map.size, str(len(map.fireman_list)) + ' firemen alive', color='r')        #display number of firemen
+
     plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #resize the image
     plt.axis('off')                                     #hide the axis
         
@@ -103,7 +104,10 @@ def destroy():
 class Window(qtg.QWidget):
     def __init__(self):
         super(Window, self).__init__()
+        
+        self.set_wind = True
         self.initUI()
+        
         
     
     def initUI(self):
@@ -147,6 +151,11 @@ class Window(qtg.QWidget):
         self.default.toggle()
         self.default.stateChanged.connect(self.set_enable)
         grid.addWidget(self.default, 1,0, 1,3)
+        
+        self.wind = qtg.QCheckBox("Wind")
+        self.wind.toggle()
+        self.wind.stateChanged.connect(self.enable_wind)
+        grid.addWidget(self.wind, 2,0, 1,3)
            
         self.start = qtg.QPushButton("START")
         self.start.clicked.connect(self.solve)
@@ -175,7 +184,6 @@ class Window(qtg.QWidget):
         self.slider.setTickPosition(qtg.QSlider.TicksBelow)
         main_layout.addWidget(self.slider)
         
-        
         main_layout.addStretch(1)
         
         self.setLayout(main_layout)         #final touch
@@ -184,6 +192,7 @@ class Window(qtg.QWidget):
         self.setWindowIcon(qtg.QIcon("gui/S.png"))
         self.setWindowTitle("S.I.E.R.R.A.")
         self.show()
+        
         
     def center(self):
         rect = self.frameGeometry()         #size of widget
@@ -194,43 +203,42 @@ class Window(qtg.QWidget):
     def set_enable(self):
         if(self.default.isChecked()):
             self.fire.setDisabled(True)
-            self.fire.setValue(0)
+            self.fire.setValue(int(np.ceil(self.size.value()/50)))
             self.frman.setDisabled(True)
-            self.frman.setValue(0)
+            self.frman.setValue(int(np.ceil(self.size.value()/3)))
         else:
             self.fire.setDisabled(False)
             self.frman.setDisabled(False)
             
+    def enable_wind(self):
+        if(self.wind.isChecked()): self.set_wind = True
+        else: self.set_wind = False
+            
     def set_slider(self, value):
         self.slider.setMinimum(0)
         self.slider.setMaximum(value)
+        self.slider.setValue(0)
         self.slider.valueChanged.connect(self.change_img)
         self.img_label.setPixmap(qtg.QPixmap("images/img100.png").scaled(300,300))
         
     def change_img(self):
         value = self.slider.value()
-#        if(value < 10):
         img_name = "images/img"+str(value+100)+".png"
-#        elif value<200:
-#            img_name = "images/img1"+str(value+100)+".png"
-#        elif value<300:
-#            img_name = "images/img2"+str(value)+".png"
-#        elif value<400:
-#            img_name = "images/img3"+str(value)+".png"
-#        elif value<500:
-#            img_name = "images/img4"+str(value)+".png"
-            
-        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(300,300))
+        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(300,300,aspectRatioMode=qtc.Qt.KeepAspectRatio))
+        
         
     def solve(self):
         self.start.setDisabled(True)        #disable start button while calculating
-        self.compile.setDisabled(False)
-        self.img_label.setPixmap(qtg.QPixmap("gui/wait.png").scaled(300,300))
+        self.compile.setDisabled(True)
         
         print('Initialisation...')
         map = mp.Map(self.size.value())
         map.creation()
         map.ini(self.fire.value(),self.frman.value())
+        
+        if(self.wind.isChecked()): map.wind_active = True
+        else: map.wind_active = False
+        
         draw(map)
         
         print('Calculating...')
