@@ -54,7 +54,7 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
         if(not new): frman_display[i][2] += 1       #size of the symbol whill be bigger
         else: frman_display.append([frman.x,frman.y,0])     #new position to draw a symbol
                 
-                
+       
     plt.matshow(map.map,cmap=color)     #display the map
     
     for i in range(len(frman_display)):          #display firemen with a red square
@@ -64,7 +64,8 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
     for i in range(len(notif)):     #display the notifications
         plt.text(0,i*2, notif[i], color='w')
         
-    plt.text(0,map.size-1,str(map.wind), color='b')
+    wind_dir = ['N','NE','E','SE','S','SW','W','NW']  
+    plt.text(0,map.size,'wind: '+ wind_dir[map.wind], color='b')
         
     plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #resize the image
     plt.axis('off')                                     #hide the axis

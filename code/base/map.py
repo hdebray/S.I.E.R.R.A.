@@ -23,7 +23,7 @@ class Map(object):
         self.burn_list = []                 #list of the cell which are actually burning
         self.fireman_list = []              #list of active firemen on the man
         self.count = 0                      #track the number of iterations
-        self.wind = 0
+        self.wind = rnd.randint(0,7)
         
     """
     Create a map by combining 2 heightmap, randomly generated with a 'value noise'
@@ -143,7 +143,7 @@ class Map(object):
 #        plots = self.call()
 #        disp.draw(self)
         for frmn in self.fireman_list:
-            #frmn.update(self)
+            frmn.update(self)
             if(frmn.hp <= 0):
                 self.fireman_list.remove(frmn)         #the fireman is dead
                 txt.append(frmn.name+" est mort")
