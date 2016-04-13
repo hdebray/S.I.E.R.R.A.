@@ -10,7 +10,6 @@ import random as rnd
 
 import base.fireman as frm
 import base.cell as cl
-import gui.display as display
 import db.data as db
 from base.fireman import distance
 
@@ -64,7 +63,7 @@ class Map(object):
         return noise
         
     def calc_noise(self,res):
-        """Calcul a value for a certain resolution (size*freq).
+        """Calcul a value for a certain resolution (size*freq)
         A new seed is generated for every noise"""
         perm = np.random.permutation(256)           #permutation table (world seed)
         self.white = self.white_noise(self.size,perm)                #white noise
@@ -72,7 +71,6 @@ class Map(object):
         temp = np.zeros([self.size,self.size])
         for i in range(self.size):
             for j in range(self.size):
-                m,n = int(i/res),int(j/res)
                 temp[i][j] = self.smooth(i/res,j/res)      #interpolation to smooth the white noise
                 
         return temp
@@ -118,11 +116,11 @@ class Map(object):
     """
     Update the simulation state
     """
-    def ini(self,foyer=-1,firemen=-1):
+    def ini(self,foyer=0,firemen=0):
         """Initialisation of the fire cells and the firemen"""
-        if(foyer < 0): foyer = int( np.ceil(self.size/50) )
+        if(foyer <= 0): foyer = int( np.ceil(self.size/50) )
         self.johnny(foyer)               #ingnite the fire
-        if(firemen < 0): firemen = int( np.ceil(self.size/3) )
+        if(firemen <= 0): firemen = int( np.ceil(self.size/3) )
         self.create_fireman(firemen)     #create the firemen
         
     def turn(self):
@@ -138,8 +136,6 @@ class Map(object):
                 cell.propagation(self)
                 if(cell.charred == True): k -= 1      #if the cell is charred, reduce k
                 i += 1
-                
-        display.draw(self,name='a')     #display the sim state after the fire expansion
         
         txt = []            #list of textual informations
         for frmn in self.fireman_list:
@@ -148,7 +144,9 @@ class Map(object):
                 self.fireman_list.remove(frmn)         #the fireman is dead
                 txt.append(frmn.name+" est mort")
                 
-        display.draw(self,name='b',text=txt)     #display the sim state after the firemen acted
+        return txt
+                
+        #display.draw(self,name='b',notif=txt)     #display the sim state after the firemen acted
             
     
     def johnny(self,n):
@@ -224,59 +222,18 @@ class Map(object):
             frmp = frm.Fireman(line[0],line[1],line[2],line[3])
             self.fireman_list.append(frmp)
             
-    """
-    Crée une liste de cases sur lesquelles les pompiers doivent aller
-    """
-#    def center(self):                               #cherche le barycentre des cases en feu
-#        x_center=0
-#        y_center=0
-#        for cell in burn_list:
-#            x_center+=self.burnlist[cell][0]/len(self.burn_list)
-#            y_center+=self.burnlist[cell][1]/len(self.burn_list)
-#            cent=[int(x_center),int(y_center)]
-#        return cent
-#            
-#    def radius(self):                               #
-#        centroide=self.center()
-#        dist=0
-#        for cell in self.burn_list:
-#            dist=max(distance(centroide[0],centroide[1],cell.x,cell.y),dist)
-#        return dist
-#        
-#    def wrapping(self):
-#        wrap=[]
-#        centroide=self.center()
-#        rad=self.radius()
-#        for cellmap in map.cell_list:
-#            dist_cent=distance(centroide[0],centroide[1],cellmap.x,cellmap.y)
-#            if dist_cent<=rad+0.5 and dist_cent>=rad-0.5:
-#                wrap.append(cellmap)
-#        return wrap
-#        
-#    def hemicycles(self,wrap):
-#        hemi1=[]
-#        hemi2=[]
-#        for index in range(len(wrap)):
-#            if index%2==1:
-#                hemi1.append(wrap[index])
-#            if index%2==0:
-#                hemi2.append(wrap[index])
-#        return hmccl1,hmccl2
-#        
-#    def cordon(self,burn_list,fireman_list):
-#        frm_nber=len(fireman_list)
-#        wrp=self.wrapping()
-#        perimeter=len(wrp)
-#        interval=int(perimeter/frm_nbr)
-#        left_cordon,right_cordon=self.hemicycles(wrp)
-#        cord=[]
-#        cord.append(left_cordon[0])    
-#        for leftcell in left_cordon:
-#            if distance(leftcell.x,leftcell.y,left_cordon[-1].x,left_cordon[-1].y)>=interval:
-#                cord.append(leftcell)
-#        cord.append(right_cordon[0]) 
-#        for rightcell in right_cordon:
-#            if distance(rightcell.x,rightcell.y,right_cordon[-1].x,right_cordon[-1].y)>=interval:
-#                cord.append(rightcell)
-#        return cord       
-#            
+    def center(self,burn_list):
+        x_center,y_center = 0,0
+        for cell in burn_list:
+            x_center+=burn_list[cell][0]/len(burn_list)
+            y_center+=burn_list[cell][1]/len(burn_list)
+        cent=[x_center,y_center]
+        return cent
+            
+    def radius(self,burn_list):
+        cent=self.center(burn_list)
+        dist=0
+        for cell in burn_list:
+            dist=max(distance(cent[0],cent[1],burn_list[cell][0],burn_list[cell][1]))
+        return dist
+            
