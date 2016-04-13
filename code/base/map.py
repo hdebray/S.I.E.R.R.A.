@@ -23,6 +23,7 @@ class Map(object):
         self.burn_list = []                 #list of the cell which are actually burning
         self.fireman_list = []              #list of active firemen on the man
         self.count = 0                      #track the number of iterations
+        self.wind = 0                       #direction of the wind
         
     """
     Create a map by combining 2 heightmap, randomly generated with a 'value noise'
