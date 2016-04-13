@@ -12,7 +12,7 @@ import matplotlib.cm as cm
 import PyQt4.QtGui as qtg
 import PyQt4.QtCore as qtc
 
-import base.map as mp
+#import base.map as mp
 
 import warnings as war      #allow to filter warnings
 import os
