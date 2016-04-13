@@ -12,39 +12,6 @@ import numpy as np
 Convention: water=0; grass=1; forest=2; town=3
 """
 
-wind0=np.array([[2, 1.5, 1],
-               [1.5, 0, .5],
-               [1, .5, 0]])
-               
-wind1=np.array([[1.5, 1, .5],
-               [2, 0, 0],
-               [1.5, 1, .5]])
-
-wind2=np.array([[1, .5, 0],
-               [1.5, 0, .5],
-               [2, 1.5, 1]])
-               
-wind3=np.array([[1.5, 2, 1.5],
-               [1, 0, 1],
-               [.5, 0, .5]])
-               
-wind4=np.array([[.5, 0, .5],
-               [1.5, 0, .5],
-               [1.5, 2, 1.5]])
-
-wind5=np.array([[1, 1.5, 2],
-               [.5, 0, 1.5],
-               [0, .5, 1]])
-               
-wind6=np.array([[.5, 1, 1.5],
-               [0, 0, 2],
-               [.5, 1, 1.5]])
-               
-wind7=np.array([[0, .5, 1],
-               [.5, 0, 1.5],
-               [1, 1.5, 2]])
-
-
 class Cell(object):
     def __init__(self,x,y,nat,state=0,charred=False):
         self.x = x
