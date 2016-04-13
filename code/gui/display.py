@@ -12,7 +12,7 @@ import matplotlib.cm as cm
 import PyQt4.QtGui as qtg
 import PyQt4.QtCore as qtc
 
-#import base.map as mp
+import base.map as mp
 
 import warnings as war      #allow to filter warnings
 import os
@@ -64,6 +64,7 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
     for i in range(len(notif)):     #display the notifications
         plt.text(0,i*2, notif[i], color='w')
         
+    plt.text(0,map.size-1,str(map.wind), color='b')
         
     plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #resize the image
     plt.axis('off')                                     #hide the axis
@@ -206,10 +207,16 @@ class Window(qtg.QWidget):
         
     def change_img(self):
         value = self.slider.value()
-        if(value < 10):
-            img_name = "images/img10"+str(value)+".png"
-        else:
-            img_name = "images/img1"+str(value)+".png"
+#        if(value < 10):
+        img_name = "images/img"+str(value+100)+".png"
+#        elif value<200:
+#            img_name = "images/img1"+str(value+100)+".png"
+#        elif value<300:
+#            img_name = "images/img2"+str(value)+".png"
+#        elif value<400:
+#            img_name = "images/img3"+str(value)+".png"
+#        elif value<500:
+#            img_name = "images/img4"+str(value)+".png"
             
         self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(300,300))
         

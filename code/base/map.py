@@ -12,7 +12,7 @@ import base.fireman as frm
 import base.cell as cl
 import db.data as db
 from base.fireman import distance
-import gui.display as disp
+#import gui.display as disp
 import copy
     
 class Map(object):
@@ -140,26 +140,25 @@ class Map(object):
                 i += 1
         
         txt = []            #list of textual informations
-        plots = self.call()
-        disp.draw(self)
-#        for frmn in self.fireman_list:
-#            #frmn.update(self)
-#            if(frmn.hp <= 0):
-#                self.fireman_list.remove(frmn)         #the fireman is dead
-#                txt.append(frmn.name+" est mort")
-#                
-#        return txt
+#        plots = self.call()
+#        disp.draw(self)
+        for frmn in self.fireman_list:
+            #frmn.update(self)
+            if(frmn.hp <= 0):
+                self.fireman_list.remove(frmn)         #the fireman is dead
+                txt.append(frmn.name+" est mort")
                 
         #display.draw(self,name='b',notif=txt)     #display the sim state after the firemen acted
                 
-        test=rnd.randint(0,100)
-        if test <=10:
+        test=rnd.randint(0,99)
+        if test < 10:
             direc=rnd.randint(0,1)
             if direc == 0:
                 self.wind = (self.wind+1)%8
             else:
                 self.wind = (self.wind-1)%8
             
+        return txt
     
     def johnny(self,n):
         """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! """
