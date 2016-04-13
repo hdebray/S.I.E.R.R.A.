@@ -66,6 +66,7 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
         
     wind_dir = ['N','NE','E','SE','S','SW','W','NW']  
     plt.text(0,map.size,'wind: '+ wind_dir[map.wind], color='b')
+    plt.text(map.size/2, map.size, str(len(map.fireman_list)) + ' firemen alive', color='r')
         
     plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #resize the image
     plt.axis('off')                                     #hide the axis
