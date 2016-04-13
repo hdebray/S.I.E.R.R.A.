@@ -342,7 +342,9 @@ class Map(object):
             
         return cordon_frm
         
-    def state (self):
-        pass
-    def clusters(self,state):
-        pass
+    #def fire_clusters(self):
+     #   copy_map=copy.deepcopy(self)
+      #  list_cell=[]
+       # for cell in copy_map:
+        #    list_cell.append
+        
