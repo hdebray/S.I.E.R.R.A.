@@ -70,7 +70,7 @@ class Cell(object):
         
         
     
-    def propagation(self,map):
+    def propagation(self,map, wind_active=True):
         """This function calculate the growing intensity of burning cells, and spread the fire around them"""
         near_cells = self.get_near(map)
         
@@ -85,51 +85,77 @@ class Cell(object):
             if n>8: n=8
         else: n = rdm.randint(0,self.state)
         
-        if n>=len(burnable):               #if n is greater than the number of burnable cells, they are all burned
-            for cell in burnable:
-                cell.state = 1
-                map.burn_list.append(cell)      #add cell to burn_list
-        else:                
+        
+        
+        
+        if wind_active:                
             for i in range(n):
                 
                 #creating the list in which the choice is made (changing probability according to the wind direction)
                 indexes=[]
                 for ce in burnable:
-                    
-                    indexes.append(near_cells.index(ce))
-                    
+                                        
                     if map.wind==0:
-                        if ce.y <= self.y:
+                        if ce.y < self.y:
                             indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
-                        if ce.y >= self.y:
-                            indexes.remove(near_cells.index(ce))    #0 probability if cell against the fire
-                        
+                            indexes.append(near_cells.index(ce))
+                        if ce.y == self.y:
+                            indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
+                                                                    #1 for the rest
                     if map.wind==4:
-                        if ce.y >= self.y:
+                        if ce.y > self.y:
                             indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
-                        if ce.y <= self.y:
-                            indexes.remove(near_cells.index(ce))    #0 probability if cell against the fire
-                    
+                            indexes.append(near_cells.index(ce))
+                        if ce.y== self.y:                 
+                            indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
+                                                                    #1 for the rest
                     if map.wind==2:
-                        if ce.x >= self.x:
+                        if ce.x > self.x:
                             indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
-                        if ce.x <= self.x:
-                            indexes.remove(near_cells.index(ce))    #0 probability if cell against the fire
-                            
+                            indexes.append(near_cells.index(ce))
+                        if ce.x == self.x:
+                            indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
+                                                                    #1 for the rest
                     if map.wind==6:
-                        if ce.x <= self.x:
+                        if ce.x < self.x:
                             indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
-                        if ce.x >= self.x:
-                            indexes.remove(near_cells.index(ce))    #0 probability if cell against the fire
-                            
-                    
+                            indexes.append(near_cells.index(ce))
+                        if ce.x == self.x:
+                            indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
+                                                                    #1 for the rest
+                print(map.count)
+                print(self)
+                print(indexes)
+
                 
-                r = rdm.choice(indexes)   #choose randoly the cell, among the availables
-                cell = near_cells[r]
-                cell.state = 1                       #cell is burned
-                map.burn_list.append(cell)
-                burnable.remove(cell)      #the cell is no more available
+                if len(indexes)>0:
+                    r = rdm.choice(indexes)   #choose randoly the cell, among the availables, with weight
+                    cell = near_cells[r]
+                    cell.state = 1                       #cell is burned
+                    map.burn_list.append(cell)
+                    burnable.remove(cell)      #the cell is no more available
+        
+
+
+
+
+        #without the wind active
+        else:
+            if n>=len(burnable):               #if n is greater than the number of burnable cells, they are all burned
+                for cell in burnable:
+                    cell.state = 1
+                    map.burn_list.append(cell)      #add cell to burn_list
+            else:                
+                for i in range(n):
+                    r = rdm.randint(0,len(burnable)-1)   #choose randoly the cell, among the availables
+                    cell = burnable[r]
+                    cell.state = 1                       #cell is burned
+                    map.burn_list.append(cell)
+                    burnable.remove(cell)      #the cell is no more available
                 
+
+
+        
         #fire intensity growing       
         if(self.nat == 3):  #burn faster if it's a house
             self.state += 2
