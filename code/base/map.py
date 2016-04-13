@@ -23,7 +23,9 @@ class Map(object):
         self.burn_list = []                 #list of the cell which are actually burning
         self.fireman_list = []              #list of active firemen on the man
         self.count = 0                      #track the number of iterations
-        self.wind = rnd.randint(0,7)
+        
+        self.wind = 0           #set the wind
+        self.wind_active = True
         
     """
     Create a map by combining 2 heightmap, randomly generated with a 'value noise'
@@ -118,12 +120,16 @@ class Map(object):
     """
     Update the simulation state
     """
-    def ini(self,foyer=0,firemen=0):
+    def ini(self,foyer=0,firemen=0,wind=True):
         """Initialisation of the fire cells and the firemen"""
         if(foyer <= 0): foyer = int( np.ceil(self.size/50) )
-        self.johnny(foyer)               #ingnite the fire
+        self.johnny(foyer)               #ignite the fire
+        
         if(firemen <= 0): firemen = int( np.ceil(self.size/3) )
         self.create_fireman(firemen)     #create the firemen
+        
+        self.wind_active = wind             #activate wind
+        self.wind = rnd.randint(0,7)        #input random wind
         
     def turn(self):
         """Calculate the simulation state on one iteration"""
@@ -135,7 +141,7 @@ class Map(object):
         while(i < k):
             if(len(self.burn_list) > 0):
                 cell = self.search(self.burn_list[i].x,self.burn_list[i].y)        #store the cell to update
-                cell.propagation(self)
+                cell.propagation(self,self.wind_active)
                 if(cell.charred == True): k -= 1      #if the cell is charred, reduce k
                 i += 1
         
@@ -228,10 +234,10 @@ class Map(object):
                 
         self.fireman_list = []
         
-        result = db.recup_fireman(num)  #collect every fireman
+        result = db.get_fireman(num)  #collect every fireman
         for line in result:
-            frmp = frm.Fireman(line[0],line[1],line[2],line[3])
-            self.fireman_list.append(frmp)
+            frman = frm.Fireman(line[0],line[1],line[2],line[3])
+            self.fireman_list.append(frman)
             
     """
     Crée une liste de cases sur lesquelles les pompiers doivent aller
