@@ -9,53 +9,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as col
 import matplotlib.cm as cm
+import PyQt4.QtGui as qtg
+import PyQt4.QtCore as qtc
+
+import base.map as mp
 
 import warnings as war      #allow to filter warnings
 import os
 
 war.filterwarnings("ignore",category=RuntimeWarning)
 
-"""
-Create a linear colormap, with RGB values
-"""
-color_map = { 'red': ((0.0, 0.007, 0.007),
-                      (0.25, 0.035, 0.035),
-                      (0.49, 0.067, 0.067),
-                      (0.5, 0.271, 0.271),
-                      (0.51, 0.165, 0.165),
-                      (0.75, 0.451, 0.451),
-                      (0.85, 0.6, 0.6),
-                      (0.95, 0.7, 0.7),
-                      (1.0, 1.0, 1.0)),
-            'green': ((0.0, 0.168, 0.168),
-                      (0.25, 0.243, 0.243),
-                      (0.49, 0.322, 0.322),
-                      (0.5, 0.424, 0.424),
-                      (0.51, 0.4, 0.4),
-                      (0.75, 0.5, 0.5),
-                      (0.85, 0.561, 0.561),
-                      (0.95, 0.702, 0.702),
-                      (1.0, 1.0, 1.0)),
-             'blue': ((0.0, 0.267, 0.267),
-                      (0.25, 0.361, 0.361),
-                      (0.49, 0.439, 0.439),
-                      (0.5, 0.463, 0.463),
-                      (0.51, 0.161, 0.161),
-                      (0.75, 0.302, 0.302),
-                      (0.85, 0.361, 0.361),
-                      (0.95, 0.702, 0.702),
-                      (1.0, 1.0, 1.0))}
-                      
-earth_color = col.LinearSegmentedColormap('earth',color_map,N=256)
-
-"""
-Create a discrete colormap, with hexa color codes
-"""
+#Create a discrete colormap, with hexa color codes
 cpool = ['#2a0d03','#318fe5', '#51c353', '#4e8539', '#b6aba2', 
          '#dc6741', '#d44212', '#a9340e', '#7f270a', '#541a07']
 
 
-def draw(map,svg=True,name='',hide=True,colorbar=False,text=[]):
+def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
     """Display the map with the matrix of values.
     svg to save the image, name for specific name, hide to hide the image, colorbar to show the colorbar
     """
@@ -86,16 +55,14 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,text=[]):
         else: frman_display.append([frman.x,frman.y,0])     #new position to draw a symbol
                 
                 
-    
     plt.matshow(map.map,cmap=color)     #display the map
     
-    
     for i in range(len(frman_display)):          #display firemen with a red square
-        size = 3 + (frman_display[i][2] * 2)
+        size = 3 + (frman_display[i][2])
         plt.plot(frman_display[i][0],frman_display[i][1],'rs',markersize=size)
     
-    for i in range(len(text)):
-        plt.text(0,i, text[i], color='w')
+    for i in range(len(notif)):     #display the notifications
+        plt.text(0,i*2, notif[i], color='w')
         
         
     plt.axis([-0.5,map.size-0.5,-0.5,map.size-0.5])     #resize the image
@@ -109,15 +76,166 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,text=[]):
 def compile(delete=False):
     """Convert every png files in a single gif, with an option to delete after the conversion is done
     YOU SHALL HAVE Imagemagick INSTALLED TO CONVERT THE PNGs INTO A GIF !
+        http://www.imagemagick.org/script/binary-releases.php
     """
+    print('Compile result...')
     
     os.system('convert -delay 40 -loop 0 images/*.png images/simulation.gif')
     
-    if(delete):    # destroy the images
-        directory = 'images/'
-        for file in os.listdir(directory):
-            if(file[-3:] == 'png'):     #if the file have a 'png' extension
-                path = directory+str(file)
-                os.remove(path)         #remove it
+    print("Done")
     
+    if(delete): destroy()         #destroy the images
+        
+                
+def destroy():
+    directory = 'images/'
+    for file in os.listdir(directory):
+        if(file[-3:] == 'png'):     #if the file have a 'png' extension
+            path = directory+str(file)
+            os.remove(path)    
+            
+    print("Detroyed")
+                
+                
+class Window(qtg.QWidget):
+    def __init__(self):
+        super(Window, self).__init__()
+        self.initUI()
+        
     
+    def initUI(self):
+        
+        grid = qtg.QGridLayout()            #grid layout to display options
+        grid.setSpacing(20)
+        
+        self.size_label = qtg.QLabel("Size:")        #label for anything
+        self.size_label.setAlignment(qtc.Qt.AlignCenter)     #self-explicit...
+        self.size = qtg.QSpinBox()
+        self.size.setMinimum(0)
+        self.size.setMaximum(300)
+        self.size.setValue(50)
+        self.size.setToolTip('Size of the map')        #info on hover
+        grid.addWidget(self.size_label, 0,0)
+        grid.addWidget(self.size, 0,1)
+        
+        self.fire_label = qtg.QLabel("Fire:")
+        self.fire_label.setAlignment(qtc.Qt.AlignCenter)
+        self.fire = qtg.QSpinBox()
+        self.fire.setMinimum(0)
+        self.fire.setMaximum(int(self.size.value() / 15))
+        self.fire.setValue(0)
+        self.fire.setToolTip('Number of burning cell on start')
+        self.fire.setDisabled(True)         #disable
+        grid.addWidget(self.fire_label, 0,2)
+        grid.addWidget(self.fire, 0,3)
+        
+        self.frman_label = qtg.QLabel("Firemen:")
+        self.frman_label.setAlignment(qtc.Qt.AlignCenter)  
+        self.frman = qtg.QSpinBox()
+        self.frman.setMinimum(0)
+        self.frman.setMaximum(int(self.size.value() * 2))
+        self.frman.setValue(0)
+        self.frman.setToolTip('Number of firemen on start')
+        self.frman.setDisabled(True)
+        grid.addWidget(self.frman_label, 0,4)
+        grid.addWidget(self.frman, 0,5)
+        
+        self.default = qtg.QCheckBox("Default settings")
+        self.default.toggle()
+        self.default.stateChanged.connect(self.set_enable)
+        grid.addWidget(self.default, 1,0, 1,3)
+           
+        self.start = qtg.QPushButton("START")
+        self.start.clicked.connect(self.solve)
+        grid.addWidget(self.start, 1,6)
+        
+        self.compile = qtg.QPushButton("Compile")
+        self.compile.setDisabled(True)
+        self.frman.setToolTip('Compile the result into a GIF')
+        self.compile.clicked.connect(compile)
+        grid.addWidget(self.compile, 2,6)
+        
+        main_layout = qtg.QVBoxLayout()
+        main_layout.setSpacing(20)
+        main_layout.addStretch(1)
+        main_layout.addLayout(grid)
+        
+        img_name = "gui/S.png"
+        self.img_label = qtg.QLabel()
+        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(300,300))
+        self.img_label.setAlignment(qtc.Qt.AlignCenter)
+        main_layout.addWidget(self.img_label)
+        
+        self.slider = qtg.QSlider(qtc.Qt.Horizontal)
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(0)
+        self.slider.setTickPosition(qtg.QSlider.TicksBelow)
+        main_layout.addWidget(self.slider)
+        
+        
+        main_layout.addStretch(1)
+        
+        self.setLayout(main_layout)         #final touch
+        self.resize(self.sizeHint())
+        self.center()
+        self.setWindowIcon(qtg.QIcon("gui/S.png"))
+        self.setWindowTitle("S.I.E.R.R.A.")
+        self.show()
+        
+    def center(self):
+        rect = self.frameGeometry()         #size of widget
+        center = qtg.QDesktopWidget().availableGeometry().center()      #center of screen resolution
+        rect.moveCenter(center)     #move center point of rect to center point of screen
+        self.move(rect.topLeft())     #move widget to top left corner of rect
+        
+    def set_enable(self):
+        if(self.default.isChecked()):
+            self.fire.setDisabled(True)
+            self.fire.setValue(0)
+            self.frman.setDisabled(True)
+            self.frman.setValue(0)
+        else:
+            self.fire.setDisabled(False)
+            self.frman.setDisabled(False)
+            
+    def set_slider(self, value):
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(value)
+        self.slider.valueChanged.connect(self.change_img)
+        self.img_label.setPixmap(qtg.QPixmap("images/img100.png").scaled(300,300))
+        
+    def change_img(self):
+        value = self.slider.value()
+        if(value < 10):
+            img_name = "images/img10"+str(value)+".png"
+        else:
+            img_name = "images/img1"+str(value)+".png"
+            
+        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(300,300))
+        
+    def solve(self):
+        self.start.setDisabled(True)        #disable start button while calculating
+        self.compile.setDisabled(False)
+        self.img_label.setPixmap(qtg.QPixmap("gui/wait.png").scaled(300,300))
+        
+        print('Initialisation...')
+        map = mp.Map(self.size.value())
+        map.creation()
+        map.ini(self.fire.value(),self.frman.value())
+        draw(map)
+        
+        print('Calculating...')
+        i=0
+        while(len(map.burn_list) > 0 and len(map.fireman_list) > 0):
+            text = map.turn()
+            draw(map,notif=text)
+            
+            i+=1
+            if(i>5*map.size):break      #seatbelt, to prevent accidents
+        
+        self.set_slider(i)
+        
+        print('Complete !')
+        self.start.setDisabled(False)
+        self.compile.setDisabled(False)
+        
