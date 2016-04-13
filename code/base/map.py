@@ -152,7 +152,7 @@ class Map(object):
             frmn.update(self)
             if(frmn.hp <= 0):
                 self.fireman_list.remove(frmn)         #the fireman is dead
-                txt.append(frmn.name+" est mort")
+                txt.append(frmn.name+" died :(")
                 
         #display.draw(self,name='b',notif=txt)     #display the sim state after the firemen acted
                 
@@ -167,7 +167,7 @@ class Map(object):
         return txt
     
     def johnny(self,n):
-        """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! """
+        """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! [start the fire, ndaz]"""
         for i in range(n):      #n: number of starting burning cell on initialisation
             b = True
             while(b):           #test loop to be sure water doesn't burn
