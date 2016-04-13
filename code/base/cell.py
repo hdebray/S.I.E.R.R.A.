@@ -37,7 +37,7 @@ class Cell(object):
         
         
     
-    def propagation(self,map, wind_active=True):
+    def propagation(self,map,wind_active):
         """This function calculate the growing intensity of burning cells, and spread the fire around them"""
         near_cells = self.get_near(map)
         
@@ -51,9 +51,6 @@ class Cell(object):
             n = rdm.randint(0,(self.state*2))        #n: number of cells to burn, n < 9
             if n>8: n=8
         else: n = rdm.randint(0,self.state)
-        
-        
-        
         
         if wind_active:                
             for i in range(n):
@@ -118,7 +115,6 @@ class Cell(object):
                         elif (ce.y > self.y and ce.x > self.x) or (ce.y < self.y and ce.x < self.x):
                             indexes.append(near_cells.index(ce))
                             
-
                 
                 if len(indexes)>0:
                     r = rdm.choice(indexes)   #choose randoly the cell, among the availables, with weight
