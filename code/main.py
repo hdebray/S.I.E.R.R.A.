@@ -7,6 +7,8 @@ Created on Thu Mar 31 10:26:48 2016
 
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
+import PyQt4.QtGui as qtg
 
 import base.map as map
 import base.cell as cl
@@ -32,13 +34,13 @@ gus = frm.Fireman('Augustin',0,0)       #create a fireman
 
 
 """Tests of the Map class"""
-map = map.Map(50)     #init a map (should be size<500, or take a coffee while waiting for the result)
+#map = map.Map(50)     #init a map (should be size<500, or take a coffee while waiting for the result)
 
 #height = map.heightmap()      #test the creation of a heightmap
 #plt.matshow(height,cmap='gray')
 
-map.creation()        #create the map for the simulation
-map.ini()             #initiate the number of burning cells, and firemans
+#map.creation()        #create the map for the simulation
+#map.ini()             #initiate the number of burning cells, and firemans
 
 #for p in map.liste_fireman:      #display the firemen
 #    print(p)
@@ -48,14 +50,9 @@ map.ini()             #initiate the number of burning cells, and firemans
     
 #for b in map.burn_list:     #display every Case object on fire
 #    print(b)
-
-
-disp.draw(map)       #display the initial state of the simulation
-i=0
-while(len(map.burn_list) > 0 and len(map.fireman_list) > 0):
-    map.turn()
     
-    i+=1
-    if(i>5*map.size):break      #seatbelt, to prevent accidents
 
-disp.compile(delete=True)       #transform png to gif   !! Imagemagick necessary !!
+if __name__=='__main__':
+    app = qtg.QApplication(sys.argv)
+    sierra = disp.Window()
+    sys.exit(app.exec_())
