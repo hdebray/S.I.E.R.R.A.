@@ -63,36 +63,61 @@ class Cell(object):
                 for ce in burnable:
                                         
                     if map.wind==0:
-                        if ce.y < self.y:
-                            indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
-                            indexes.append(near_cells.index(ce))
-                        if ce.y == self.y:
-                            indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
-                                                                    #1 for the rest
-                    if map.wind==4:
                         if ce.y > self.y:
                             indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
                             indexes.append(near_cells.index(ce))
-                        if ce.y== self.y:                 
+                        elif ce.y == self.y:
                             indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
                                                                     #1 for the rest
-                    if map.wind==2:
+                    elif map.wind==4:
+                        if ce.y < self.y:
+                            indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
+                            indexes.append(near_cells.index(ce))
+                        elif ce.y== self.y:                 
+                            indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
+                                                                    #1 for the rest
+                    elif map.wind==2:
                         if ce.x > self.x:
                             indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
                             indexes.append(near_cells.index(ce))
-                        if ce.x == self.x:
+                        elif ce.x == self.x:
                             indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
                                                                     #1 for the rest
-                    if map.wind==6:
+                    elif map.wind==6:
                         if ce.x < self.x:
                             indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
                             indexes.append(near_cells.index(ce))
-                        if ce.x == self.x:
+                        elif ce.x == self.x:
                             indexes.append(near_cells.index(ce))    #0 probability if cell against the fire
-                                                                    #1 for the rest
-                print(map.count)
-                print(self)
-                print(indexes)
+                                                                    #1 for the rest                          
+                    elif map.wind==1:
+                        if ce.y >= self.y and ce.x >= self.x:
+                            indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
+                            indexes.append(near_cells.index(ce))
+                        elif (ce.y > self.y and ce.x < self.x) or (ce.y < self.y and ce.x > self.x):
+                            indexes.append(near_cells.index(ce))                            
+
+                    elif map.wind==3:
+                        if ce.y <= self.y and ce.x >= self.x:
+                            indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
+                            indexes.append(near_cells.index(ce))
+                        elif (ce.y > self.y and ce.x > self.x) or (ce.y < self.y and ce.x < self.x):
+                            indexes.append(near_cells.index(ce))      
+                            
+                    elif map.wind==5:
+                        if ce.y <= self.y and ce.x <= self.x:
+                            indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
+                            indexes.append(near_cells.index(ce))
+                        elif (ce.y > self.y and ce.x < self.x) or (ce.y < self.y and ce.x > self.x):
+                            indexes.append(near_cells.index(ce))
+                            
+                    elif map.wind==7:
+                        if ce.y >= self.y and ce.x <= self.x:
+                            indexes.append(near_cells.index(ce))    #*2 probability if the cells in direction of fire
+                            indexes.append(near_cells.index(ce))
+                        elif (ce.y > self.y and ce.x > self.x) or (ce.y < self.y and ce.x < self.x):
+                            indexes.append(near_cells.index(ce))
+                            
 
                 
                 if len(indexes)>0:
