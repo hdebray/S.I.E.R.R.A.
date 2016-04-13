@@ -23,7 +23,7 @@ def save_map(cell_list,fireman_list,count):
         
         cur.execute("CREATE TABLE IF NOT EXISTS firemen(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, name STRING, x INT, y INT, hp INT, count INT)") 
         for frman in fireman_list:
-            cur.execute("INSERT INTO firemen(name,x,y,hp,count) VALUES(?,?,?,?,?,?)",(frman.name,frman.x,frman.y,frman.hp,count))
+            cur.execute("INSERT INTO firemen(name,x,y,hp,count) VALUES(?,?,?,?,?)",(frman.name,frman.x,frman.y,frman.hp,count))
         
         con.commit()
         
@@ -78,6 +78,30 @@ def get_fireman(value):
         
         result = cur.fetchall()
         return result
+        
+    except sql.OperationalError:
+        print('Unable to connect to database')
+        
+    except Exception as e:
+        print("Erreur")
+        con.rollback()
+        raise e
+        
+    except(sql.Error):
+        print("Connection error")
+        
+    finally:
+        cur.close()
+        con.close()
+        
+def reset():
+    try:
+        con = sql.connect('db/simu.db')
+        cur = con.cursor()
+        
+        cur.execute("DROP TABLE cells")      #delete Table
+        cur.execute("DROP TABLE firemen")
+        con.commit()
         
     except sql.OperationalError:
         print('Unable to connect to database')
