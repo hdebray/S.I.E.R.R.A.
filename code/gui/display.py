@@ -174,7 +174,7 @@ class Window(qtg.QWidget):
         
         img_name = "gui/S.png"
         self.img_label = qtg.QLabel()
-        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(300,300))
+        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(500,500))
         self.img_label.setAlignment(qtc.Qt.AlignCenter)
         main_layout.addWidget(self.img_label)
         
@@ -219,12 +219,12 @@ class Window(qtg.QWidget):
         self.slider.setMaximum(value)
         self.slider.setValue(0)
         self.slider.valueChanged.connect(self.change_img)
-        self.img_label.setPixmap(qtg.QPixmap("images/img100.png").scaled(300,300))
+        self.img_label.setPixmap(qtg.QPixmap("images/img100.png").scaled(500,500,aspectRatioMode=qtc.Qt.KeepAspectRatio))
         
     def change_img(self):
         value = self.slider.value()
         img_name = "images/img"+str(value+100)+".png"
-        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(300,300,aspectRatioMode=qtc.Qt.KeepAspectRatio))
+        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(500,500,aspectRatioMode=qtc.Qt.KeepAspectRatio))
         
         
     def solve(self):
