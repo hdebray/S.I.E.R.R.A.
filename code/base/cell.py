@@ -13,7 +13,13 @@ Convention: water=0; grass=1; forest=2; town=3
 """
 
 class Cell(object):
+    """Cell class
+    The cells are the components of the map, they have a position defined by their coodinates
+    x and y, their nature (water=0; grass=1; forest=2; town=3), their burning state (from 0 to 5),
+    and if they are charred or not (using a boolean).
+    """
     def __init__(self,x,y,nat,state=0,charred=False):
+        """The constructor."""
         self.x = x
         self.y = y
         self.nat = nat      #nature of the cell (see 'convention' above)
@@ -21,6 +27,7 @@ class Cell(object):
         self.charred = charred      #boolean to test if cell is destroyed
         
     def __str__(self):
+        """The display: displays the nature and the position"""
         if(self.nat == 0): txt = 'water'
         if(self.nat == 1): txt = 'grass'
         if(self.nat == 2): txt = 'forest'
@@ -28,7 +35,7 @@ class Cell(object):
         return "{} (x:{},y:{})".format(txt,self.x,self.y)
             
     def get_near(self,map):
-        """Utilisty function to get the list of cells near the "self" cell"""
+        """Utility function to get the list of cells near the "self" cell"""
         near_cells = []
         for i in range(self.x-1, self.x+2):
             for j in range(self.y-1, self.y+2):
@@ -38,7 +45,7 @@ class Cell(object):
         
     
     def propagation(self,map,wind_active):
-        """This function calculate the growing intensity of burning cells, and spread the fire around them"""
+        """This function calculates the growing intensity of burning cells, and spreads the fire around them"""
         near_cells = self.get_near(map)
         
         #fire spreading
@@ -156,6 +163,7 @@ class Cell(object):
             map.burn_list.remove(self)      #burned cells are removed form the burn_list
             
     def in_fire(self):
+        """This function returns a boolean determining if the cell is on fire"""
         Fire=False
         if self.state>0 and self.state<=5:
             Fire=True

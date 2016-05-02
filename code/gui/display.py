@@ -74,7 +74,7 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
         
     if(svg):
         txt = "images/img" + str(map.count+100) + name + ".png"      #image's name, +100 for index problems (conversion)
-        plt.savefig(txt,dpi=100,bbox_inches='tight',pad_inches=0)
+        plt.savefig(txt,dpi=150,bbox_inches='tight',pad_inches=0)
 
 
 def compile(delete=False):
