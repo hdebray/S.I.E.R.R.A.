@@ -278,121 +278,49 @@ class Map(object):
         label,numbr_clust = mrs.label(mat2,self.mask)           #construct the matrix with each clusters
         for i in range(numbr_clust):
             list_clusts.append([])
-        for cell_lab in label:
-            value=cell_lab[0]
-            if value!=0:
-                cell_clust=
+        for line in label:
+            for column in label:
+                value=label[line][column]
+                if value!=0:
+                    cell_clust=self.search(line,column)
                 
-               " list_clust[value].append(cell_clust)"
-        return list_clust
+                    list_clusts[value].append(cell_clust)
+        return list_clusts
                 
     
     
-    def headcounts(self):
+    def headcount(self,index_clust):
         clstrs=self.clusters()
-        for i in range len(clstrs):
-            area_clust=len(clstrs[i])
-            area_burning=len(self.burn_list)
-            total_headcount=len(self.fireman_list)
-            ratio=area_clust/area_burning
-            headcount_clust=int(ration*total_headcount)
-            
-        
-        
-        
-        
-        
-        
-#    def cluster(self,list_burning):
-#        clust=[list_burning[0]]
-#        for cell in list_burning:
-#            for clust_cell in clust:
-#                list_near=clust_cell.get_near(self)
-#                for i in list_near: 
-#                    if(i.state==0 or i.charred==True): list_near.remove(i)
-#                    print(len(list_near))
-#                for neighbour in list_near:
-#                    for cl_cell in clust:
-#                        present=False
-#                        if cl_cell.x==neighbour.x and cl_cell.y==neighbour.y:
-#                            present=True
-#                    if present==False:
-#                        clust.append(neighbour)
-#                print('u')
-#        for i in clust:
-#            print(i)
-#        return clust
-       
-    def cluster(self,burnng_cells):
-        clust=[]
-        for burn_cell in burnng_cells:
-            nears=burn_cell.get_near(self)
-            print('nbr_voisins')
-            print (len(nears))
-            for neighbour in nears:
-                print('cherche_voisin_brul')
-                in_list_burn=False
-                for cell_burning in burnng_cells:
-                    if cell_burning.x==neighbour.x and cell_burning.y==neighbour.y:
-                        neighbour=cell_burning
-                        in_list_burn=True
-                print('voisin_brul')
-                print(in_list_burn)
-                if in_list_burn==True:
-                    clust.append(neighbour)
-                    
-                    burnng_cells.remove(neighbour)
-                print('taille_clust')
-                print (len(clust))
-            print('clust')
-            print(clust)
-        return clust
-                    
-                         
-                
-                
-            
-            
-        
-    def fire_clusters(self):
-        print('debut_formation_liste_clust')
-        burning_cells=copy.deepcopy(self.burn_list)
-        cluster_list=[]
-        while len(burning_cells)>0:
-            print('longueur_liste_en_feu')
-            print(len(burning_cells))
-            clst=self.cluster(burning_cells)
-            for clustcell in clst:
-                in_burning_list=False
-                for cell_burning in burning_cells:
-                    if cell_burning.x==clustcell.x and cell_burning.y==clustcell.y:
-                        clustcell=cell_burning
-                        in_burning_list=True
-                if in_burning_list==True:
-                    
-                    burning_cells.remove(clustcell)
-            cluster_list.append(clst)
-        return cluster_list
+        area_clust=len(clstrs[index_clust])
+        area_burning=len(self.burn_list)
+        total_headcount=len(self.fireman_list)
+        ratio=area_clust/area_burning
+        headcount_clust=int(ratio*total_headcount)
+        return headcount_clust
+
                         
-                        
-                
-           
+            
     """
     Create a list of cells where the firemen will have to go
     """
-    def center(self):                               
+    def center(self,index_clust):                               
         """Calculate the center of mass of the cluster"""
+        list_clusts=self.clusters
+        cluster=list_clusts[index_clust]
         x_center=0
         y_center=0
+        
         for cell in cluster:
             x_center+=cell.x/len(cluster)     #calculate the mean coordonates
             y_center+=cell.y/len(cluster)
         cent=[int(x_center),int(y_center)]
         return cent
             
-    def radius(self): 
-        """Calculate the differents radius (max,mean,min) from the center of the cluster"""                              
-        centroide=self.center()
+    def radius(self,index_clust): 
+        """Calculate the differents radius (max,mean,min) from the center of the cluster"""  
+        list_clusts=self.clusters
+        cluster=list_clusts[index_clust]                            
+        centroide=self.center(index_clust)
         dist_max=0
         dist_min=0
         for cell in cluster:
@@ -400,13 +328,13 @@ class Map(object):
             dist_min=min(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_min)    #search for the shortest distance
         return dist_max,dist_min
         
-    def wrapping(self):
+    def wrapping(self,index_clust):
         """Collect the list of cases which distance with the center is equal to the radius"""
         wrap_max=[]
         wrap_min=[]
         wrap_moy=[]
-        centroide=self.center()
-        temp_rad=self.radius()
+        centroide=self.center(index_clust)
+        temp_rad=self.radius(index_clust)
         rad_max=temp_rad[0]
         rad_min=temp_rad[1]
         rad_moy=(rad_max+rad_min)/2
@@ -421,7 +349,7 @@ class Map(object):
             
         return wrap_max,wrap_min,wrap_moy
         
-    def hemicycles(self,wrap):
+    def hemicycles(self,wrap,index_clust):
         """Allows the wrap to be ordinated (but divide the wrap in two parts)"""
         hemi1=[]
         hemi2=[]
@@ -432,11 +360,10 @@ class Map(object):
                 hemi2.append(wrap[index])   #collect the cells of the other side
         return hemi1,hemi2
         
-    def cordon(self):
+    def cordon(self,frman_available,index_clust):
         """Select the cases where the firemen will go to"""
-        frman_available=copy.copy(self.fireman_list)
-        frm_nbr=len(frman_available)
-        temp_wrp=self.wrapping()
+        frm_nbr=self.headcount()
+        temp_wrp=self.wrapping(index_clust)
         wrp=temp_wrp[2]
         perimeter=len(wrp)
         interval=int(perimeter/frm_nbr)     #calculate the interval between two firemen
