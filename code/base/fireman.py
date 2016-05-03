@@ -43,6 +43,15 @@ class Fireman(object):
         :param x: integer, first coordinate
         :param y: integer, second coordinate
         :param hp: float, health points
+        
+        
+        Tests
+        ---
+        >>>Fireman('john')
+        Traceback (most recent call last):
+            ...
+        TypeError: __init__() missing 2 required positional arguments: 'x' and 'y'
+        
         """
         self.name = str(name)     #the name is equal to an id
         self.x = x
