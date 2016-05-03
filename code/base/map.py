@@ -11,12 +11,18 @@ import random as rnd
 import base.fireman as frm
 import base.cell as cl
 import db.data as db
-from base.fireman import distance
 #import gui.display as disp
 import copy
     
 class Map(object):
+    """The Map class is the class describing the terrain and its evolution.
+    It is defined by its size, a matrix used for display, the list of the cells 
+    of the terrain, the list of firemen present on the terrain, the count (which is 
+    the number of iterations), the direction of the wind (0:N, 1:NE, 2:E, 3:SE,4:S, 
+    5:SW, 6:W, 7:NW), and if the wind is actie or not.
+    """
     def __init__(self,size):
+        """The constructor."""
         self.size = size                    #size of the map, the map is always a square
         self.map = np.zeros([size,size])    #init the matrix to display the map
         self.cell_list = []                 #list of the cell which compose the map
@@ -28,7 +34,7 @@ class Map(object):
         self.wind_active = True
         
     """
-    Create a map by combining 2 heightmap, randomly generated with a 'value noise'
+    Creation of a map by combining 2 heightmap, randomly generated with a 'value noise'
     """
     def creation(self):
         """Combine two heightmap (height and moisture)"""
@@ -118,9 +124,9 @@ class Map(object):
         
         
     """
-    Update the simulation state
+    Update of the simulation's state
     """
-    def ini(self,foyer=0,firemen=0,wind=True):
+    def ini(self,foyer=0,firemen=0,wind=True, saving=True):
         """Initialisation of the fire cells and the firemen"""
         if(foyer <= 0): foyer = int( np.ceil(self.size/50) )
         self.johnny(foyer)               #ignite the fire
@@ -128,11 +134,14 @@ class Map(object):
         if(firemen <= 0): firemen = int( np.ceil(self.size/3) )
         self.create_fireman(firemen)     #create the firemen
         
+        if saving:
+            self.save()
+        
         self.wind_active = wind             #activate wind
         self.wind = rnd.randint(0,7)        #input random wind
         
     def turn(self):
-        """Calculate the simulation state on one iteration"""
+        """Calculates the simulation's state on one iteration"""
         if(self.count == 0 and len(self.burn_list) < 1): self.ini()     #default init
         self.count+= 1
         
@@ -167,7 +176,8 @@ class Map(object):
         return txt
     
     def johnny(self,n):
-        """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! [start the fire, ndaz]"""
+        """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! 
+        [starts the fire, ndaz]"""
         for i in range(n):      #n: number of starting burning cell on initialisation
             b = True
             while(b):           #test loop to be sure water doesn't burn
@@ -180,7 +190,7 @@ class Map(object):
             
             
     def create_fireman(self,n):
-        """Create n Fireman objects, and store them is fireman_list"""
+        """Creates n Fireman objects, and stores them is fireman_list"""
         for i in range(n):      #n: number of starting firemen on initialisation
             name = "august"+str(i)      #one of them will be called 'august1'...
             b = True
@@ -193,14 +203,14 @@ class Map(object):
         
         
     def search(self,x,y):
-        """Search the Cell object with the right coordinates, and return this object"""
+        """Searches the Cell object with the right coordinates, and return this object"""
         result = None
         for cell in self.cell_list:
             if(cell.x == x and cell.y == y): result = cell
         return result
         
     def calc_mat(self):
-        """Calculate the matrix's cells value based on their corresponding Cell object.
+        """Calculates the matrix's cells value based on their corresponding Cell object.
         Only used to display"""
         self.map = np.zeros([self.size,self.size])      #init
         for cell in self.burn_list:       #first set the burning cells
@@ -217,11 +227,11 @@ class Map(object):
         
         
     def save(self):
-        """Save the simulation state and the iterations count"""
+        """Saves the simulation's state and the iterations count"""
         db.save_map(self.cell_list,self.fireman_list,self.count)
         
     def construct(self,num):
-        """Recreate the simulation state, based on the cell_list and fire_man list, of the iteration 'n' """
+        """Recreates the simulation state, based on the cell_list and fire_man list, of the iteration 'n' """
         self.cell_list = []
         self.burn_list = []
         
@@ -238,7 +248,9 @@ class Map(object):
         for line in result:
             frman = frm.Fireman(line[0],line[1],line[2],line[3])
             self.fireman_list.append(frman)
-            
+
+
+           
     """
     Crée une liste de cases sur lesquelles les pompiers doivent aller
     """
@@ -346,10 +358,3 @@ class Map(object):
             frman_available.remove(frman)
             
         return cordon_frm
-        
-    #def fire_clusters(self):
-     #   copy_map=copy.deepcopy(self)
-      #  list_cell=[]
-       # for cell in copy_map:
-        #    list_cell.append
-        
