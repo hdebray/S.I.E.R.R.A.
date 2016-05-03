@@ -74,7 +74,7 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
         
     if(svg):
         txt = "images/img" + str(map.count+100) + name + ".png"      #image's name, +100 for index problems (conversion)
-        plt.savefig(txt,dpi=150,bbox_inches='tight',pad_inches=0)
+        plt.savefig(txt,dpi=200,bbox_inches='tight',pad_inches=0)
 
 
 def compile(delete=False):
@@ -96,7 +96,7 @@ def destroy():
     for file in os.listdir(directory):
         if(file[-3:] == 'png'):     #if the file have a 'png' extension
             path = directory+str(file)
-            os.remove(path)    
+            os.remove(path)         #remove the file
             
     print("Detroyed")
                 
@@ -105,6 +105,7 @@ class Window(qtg.QWidget):
     def __init__(self):
         super(Window, self).__init__()
         
+        self.dim = int(qtg.QDesktopWidget().screenGeometry().height() / 2)  #max dimension of images
         self.set_wind = True
         self.initUI()
         
@@ -129,8 +130,8 @@ class Window(qtg.QWidget):
         self.fire_label.setAlignment(qtc.Qt.AlignCenter)
         self.fire = qtg.QSpinBox()
         self.fire.setMinimum(0)
-        self.fire.setMaximum(int(self.size.value() / 15))
-        self.fire.setValue(0)
+        self.fire.setMaximum( int(self.size.value()/15) )
+        self.fire.setValue( int(np.ceil(self.size.value()/50)) )
         self.fire.setToolTip('Number of burning cell on start')
         self.fire.setDisabled(True)         #disable
         grid.addWidget(self.fire_label, 0,2)
@@ -141,7 +142,7 @@ class Window(qtg.QWidget):
         self.frman = qtg.QSpinBox()
         self.frman.setMinimum(0)
         self.frman.setMaximum(int(self.size.value() * 2))
-        self.frman.setValue(0)
+        self.frman.setValue( int(np.ceil(self.size.value()/3)) )
         self.frman.setToolTip('Number of firemen on start')
         self.frman.setDisabled(True)
         grid.addWidget(self.frman_label, 0,4)
@@ -174,7 +175,7 @@ class Window(qtg.QWidget):
         
         img_name = "gui/S.png"
         self.img_label = qtg.QLabel()
-        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(500,500))
+        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(self.dim,self.dim))
         self.img_label.setAlignment(qtc.Qt.AlignCenter)
         main_layout.addWidget(self.img_label)
         
@@ -219,12 +220,12 @@ class Window(qtg.QWidget):
         self.slider.setMaximum(value)
         self.slider.setValue(0)
         self.slider.valueChanged.connect(self.change_img)
-        self.img_label.setPixmap(qtg.QPixmap("images/img100.png").scaled(500,500,aspectRatioMode=qtc.Qt.KeepAspectRatio))
+        self.img_label.setPixmap(qtg.QPixmap("images/img100.png").scaled(self.dim,self.dim,aspectRatioMode=qtc.Qt.KeepAspectRatio))
         
     def change_img(self):
         value = self.slider.value()
         img_name = "images/img"+str(value+100)+".png"
-        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(500,500,aspectRatioMode=qtc.Qt.KeepAspectRatio))
+        self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(self.dim,self.dim,aspectRatioMode=qtc.Qt.KeepAspectRatio))
         
         
     def solve(self):
@@ -232,12 +233,10 @@ class Window(qtg.QWidget):
         self.compile.setDisabled(True)
         
         print('Initialisation...')
+        destroy()
         map = mp.Map(self.size.value())
         map.creation()
-        map.ini(self.fire.value(),self.frman.value())
-        
-        if(self.wind.isChecked()): map.wind_active = True
-        else: map.wind_active = False
+        map.ini(self.fire.value(),self.frman.value(),self.wind.isChecked())
         
         draw(map)
         
