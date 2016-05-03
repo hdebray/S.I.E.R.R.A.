@@ -19,7 +19,14 @@ class Cell(object):
     and if they are charred or not (using a boolean).
     """
     def __init__(self,x,y,nat,state=0,charred=False):
-        """The constructor."""
+        """The constructor.
+        
+        :param x: integer
+        :param y: integer coordinates
+        :param nat: integer in [0,3], nature of the cell, following the convention
+        :param state: integer in [0,5], burning state of the cell
+        :param charred: boolean, True if the cell is charred
+        """
         self.x = x
         self.y = y
         self.nat = nat      #nature of the cell (see 'convention' above)
@@ -35,7 +42,11 @@ class Cell(object):
         return "{} (x:{},y:{})".format(txt,self.x,self.y)
             
     def get_near(self,map):
-        """Utility function to get the list of cells near the "self" cell"""
+        """Utility function to get the list of cells near the "self" cell
+        
+        :param map: map
+        :return list of the near cells
+        """
         near_cells = []
         for i in range(self.x-1, self.x+2):
             for j in range(self.y-1, self.y+2):
@@ -45,7 +56,10 @@ class Cell(object):
         
     
     def propagation(self,map,wind_active):
-        """This function calculates the growing intensity of burning cells, and spreads the fire around them"""
+        """This function calculates the growing intensity of burning cells, and spreads the fire around them
+        
+        :param map: map
+        """
         near_cells = self.get_near(map)
         
         #fire spreading
