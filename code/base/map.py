@@ -7,6 +7,7 @@ Created on Mon Mar 28 11:49:48 2016
 
 import numpy as np
 import random as rnd
+import scipy.ndimage.measurements as mrs
 
 import base.fireman as frm
 import base.cell as cl
@@ -32,6 +33,7 @@ class Map(object):
         
         self.wind = 0           #set the wind
         self.wind_active = True
+        self.mask=[[1,1,1],[1,1,1],[1,1,1]]
         
     """
     Creation of a map by combining 2 heightmap, randomly generated with a 'value noise'
@@ -249,7 +251,131 @@ class Map(object):
             frman = frm.Fireman(line[0],line[1],line[2],line[3])
             self.fireman_list.append(frman)
 
-
+            
+    """
+    groups fire's locations into different clusters
+    """
+     
+             
+    mat2 = np.zeros([map.size,map.size])
+    for cell in map.burn_list:
+        mat2[cell.y,cell.x] = 1
+    
+#    print(mat2)
+             
+    label,num = mrs.label(mat2,self.mask)           #construct the matrix with each clusters
+    area = mrs.sum(mat2,label,np.arange(label.max()+1)).tolist()     #calculate the area of the cluster (ordered by index)
+    rect = mrs.find_objects(label == area.index(max(area)))[0]      #output slice objects of bigggest cluster
+    rect_x,rect_y = rect[0],rect[1]         #save slice objects attributes
+    
+    def clusters(self):
+        
+        mat2 = np.zeros([map.size,map.size])
+        list_clusts=[]
+        for cell in map.burn_list:
+            mat2[cell.y,cell.x] = 1
+            
+        label,numbr_clust = mrs.label(mat2,self.mask)           #construct the matrix with each clusters
+        for i in range(numbr_clust):
+            list_clusts.append([])
+        for cell_lab in label:
+            value=cell_lab[0]
+            if value!=0:
+                cell_clust=
+                
+               " list_clust[value].append(cell_clust)"
+        return list_clust
+                
+    
+    
+    def headcounts(self):
+        clstrs=self.clusters()
+        for i in range len(clstrs):
+            area_clust=len(clstrs[i])
+            area_burning=len(self.burn_list)
+            total_headcount=len(self.fireman_list)
+            ratio=area_clust/area_burning
+            headcount_clust=int(ration*total_headcount)
+            
+        
+        
+        
+        
+        
+        
+#    def cluster(self,list_burning):
+#        clust=[list_burning[0]]
+#        for cell in list_burning:
+#            for clust_cell in clust:
+#                list_near=clust_cell.get_near(self)
+#                for i in list_near: 
+#                    if(i.state==0 or i.charred==True): list_near.remove(i)
+#                    print(len(list_near))
+#                for neighbour in list_near:
+#                    for cl_cell in clust:
+#                        present=False
+#                        if cl_cell.x==neighbour.x and cl_cell.y==neighbour.y:
+#                            present=True
+#                    if present==False:
+#                        clust.append(neighbour)
+#                print('u')
+#        for i in clust:
+#            print(i)
+#        return clust
+       
+    def cluster(self,burnng_cells):
+        clust=[]
+        for burn_cell in burnng_cells:
+            nears=burn_cell.get_near(self)
+            print('nbr_voisins')
+            print (len(nears))
+            for neighbour in nears:
+                print('cherche_voisin_brul')
+                in_list_burn=False
+                for cell_burning in burnng_cells:
+                    if cell_burning.x==neighbour.x and cell_burning.y==neighbour.y:
+                        neighbour=cell_burning
+                        in_list_burn=True
+                print('voisin_brul')
+                print(in_list_burn)
+                if in_list_burn==True:
+                    clust.append(neighbour)
+                    
+                    burnng_cells.remove(neighbour)
+                print('taille_clust')
+                print (len(clust))
+            print('clust')
+            print(clust)
+        return clust
+                    
+                         
+                
+                
+            
+            
+        
+    def fire_clusters(self):
+        print('debut_formation_liste_clust')
+        burning_cells=copy.deepcopy(self.burn_list)
+        cluster_list=[]
+        while len(burning_cells)>0:
+            print('longueur_liste_en_feu')
+            print(len(burning_cells))
+            clst=self.cluster(burning_cells)
+            for clustcell in clst:
+                in_burning_list=False
+                for cell_burning in burning_cells:
+                    if cell_burning.x==clustcell.x and cell_burning.y==clustcell.y:
+                        clustcell=cell_burning
+                        in_burning_list=True
+                if in_burning_list==True:
+                    
+                    burning_cells.remove(clustcell)
+            cluster_list.append(clst)
+        return cluster_list
+                        
+                        
+                
            
     """
     Create a list of cells where the firemen will have to go
@@ -258,9 +384,9 @@ class Map(object):
         """Calculate the center of mass of the cluster"""
         x_center=0
         y_center=0
-        for cell in self.burn_list:
-            x_center+=cell.x/len(self.burn_list)     #calculate the mean coordonates
-            y_center+=cell.y/len(self.burn_list)
+        for cell in cluster:
+            x_center+=cell.x/len(cluster)     #calculate the mean coordonates
+            y_center+=cell.y/len(cluster)
         cent=[int(x_center),int(y_center)]
         return cent
             
@@ -269,7 +395,7 @@ class Map(object):
         centroide=self.center()
         dist_max=0
         dist_min=0
-        for cell in self.burn_list:
+        for cell in cluster:
             dist_max=max(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_max)    #search for the longest distance
             dist_min=min(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_min)    #search for the shortest distance
         return dist_max,dist_min
