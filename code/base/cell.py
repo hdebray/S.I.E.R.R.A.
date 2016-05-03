@@ -55,7 +55,7 @@ class Cell(object):
         
         
     
-    def propagation(self,map,wind_active):
+    def propagation(self,mape):
         """This function calculates the growing intensity of burning cells, and spreads the fire around them
         
         :param map: map
@@ -73,7 +73,7 @@ class Cell(object):
             if n>8: n=8
         else: n = rdm.randint(0,self.state)
         
-        if wind_active:                
+        if map.wind_active:                
             for i in range(n):
                 
                 #creating the list in which the choice is made (changing probability according to the wind direction)

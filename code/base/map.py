@@ -23,7 +23,10 @@ class Map(object):
     5:SW, 6:W, 7:NW), and if the wind is actie or not.
     """
     def __init__(self,size):
-        """The constructor."""
+        """The constructor.
+        
+        :param size: integer, size of the map (which is a square)
+        """
         self.size = size                    #size of the map, the map is always a square
         self.map = np.zeros([size,size])    #init the matrix to display the map
         self.cell_list = []                 #list of the cell which compose the map
@@ -128,10 +131,16 @@ class Map(object):
     """
     Update of the simulation's state
     """
-    def ini(self,foyer=0,firemen=0,wind=True, saving=True):
-        """Initialisation of the fire cells and the firemen"""
-        if(foyer <= 0): foyer = int( np.ceil(self.size/50) )
-        self.johnny(foyer)               #ignite the fire
+    def ini(self,heart_num=0,firemen=0,wind=True,saving=True):
+        """Initialisation of the fire cells and the firemen
+        
+        :param heart_num: integer, number of hearts of the fire
+        :param firement: integer, number of firemen present
+        :param wind: boolean, True if the wind is active
+        :param saving: boolean, Tru if the initial state is saved
+        """
+        if(heart_num <= 0): heart_num = int( np.ceil(self.size/50) )
+        self.johnny(heart_num)               #ignite the fire
         
         if(firemen <= 0): firemen = int( np.ceil(self.size/3) )
         self.create_fireman(firemen)     #create the firemen
@@ -143,7 +152,10 @@ class Map(object):
         self.wind = rnd.randint(0,7)        #input random wind
         
     def turn(self):
-        """Calculates the simulation's state on one iteration"""
+        """Calculates the simulation's state on one iteration
+        
+        :return: useful text for display        
+        """
         if(self.count == 0 and len(self.burn_list) < 1): self.ini()     #default init
         self.count+= 1
         
@@ -152,7 +164,7 @@ class Map(object):
         while(i < k):
             if(len(self.burn_list) > 0):
                 cell = self.search(self.burn_list[i].x,self.burn_list[i].y)        #store the cell to update
-                cell.propagation(self,self.wind_active)
+                cell.propagation(self)
                 if(cell.charred == True): k -= 1      #if the cell is charred, reduce k
                 i += 1
         
@@ -179,7 +191,10 @@ class Map(object):
     
     def johnny(self,n):
         """ ALLUMMEEEEEEEEEEEEEEEERR,  LE FEEUUU !! 
-        [starts the fire, ndaz]"""
+        [starts the fire, ndaz]
+        
+        :param n: integer, number of hearts of fire        
+        """
         for i in range(n):      #n: number of starting burning cell on initialisation
             b = True
             while(b):           #test loop to be sure water doesn't burn
@@ -192,7 +207,10 @@ class Map(object):
             
             
     def create_fireman(self,n):
-        """Creates n Fireman objects, and stores them is fireman_list"""
+        """Creates n Fireman objects, and stores them is fireman_list
+        
+        :param n: integer, number of firemen present
+        """
         for i in range(n):      #n: number of starting firemen on initialisation
             name = "august"+str(i)      #one of them will be called 'august1'...
             b = True
@@ -205,7 +223,12 @@ class Map(object):
         
         
     def search(self,x,y):
-        """Searches the Cell object with the right coordinates, and return this object"""
+        """Searches the Cell object with the right coordinates, and return this object
+        
+        :param x: integer
+        :param y: integer coordinates
+        :return: the cell at the position (x,y)
+        """
         result = None
         for cell in self.cell_list:
             if(cell.x == x and cell.y == y): result = cell
@@ -213,7 +236,7 @@ class Map(object):
         
     def calc_mat(self):
         """Calculates the matrix's cells value based on their corresponding Cell object.
-        Only used to display"""
+        Only used for display"""
         self.map = np.zeros([self.size,self.size])      #init
         for cell in self.burn_list:       #first set the burning cells
             i,j = cell.y,cell.x
@@ -233,7 +256,10 @@ class Map(object):
         db.save_map(self.cell_list,self.fireman_list,self.count)
         
     def construct(self,num):
-        """Recreates the simulation state, based on the cell_list and fire_man list, of the iteration 'n' """
+        """Recreates the simulation state, based on the cell_list and fire_man list, of the iteration 'num' 
+        
+        :param num: integer, number of the iteration at which to begin
+        """
         self.cell_list = []
         self.burn_list = []
         
