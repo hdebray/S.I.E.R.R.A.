@@ -255,19 +255,7 @@ class Map(object):
     """
     groups fire's locations into different clusters
     """
-     
-             
-    mat2 = np.zeros([map.size,map.size])
-    for cell in map.burn_list:
-        mat2[cell.y,cell.x] = 1
-    
-#    print(mat2)
-             
-    label,num = mrs.label(mat2,self.mask)           #construct the matrix with each clusters
-    area = mrs.sum(mat2,label,np.arange(label.max()+1)).tolist()     #calculate the area of the cluster (ordered by index)
-    rect = mrs.find_objects(label == area.index(max(area)))[0]      #output slice objects of bigggest cluster
-    rect_x,rect_y = rect[0],rect[1]         #save slice objects attributes
-    
+
     def clusters(self):
         
         mat2 = np.zeros([map.size,map.size])
@@ -305,7 +293,7 @@ class Map(object):
     """
     def center(self,index_clust):                               
         """Calculate the center of mass of the cluster"""
-        list_clusts=self.clusters
+        list_clusts=self.clusters()
         cluster=list_clusts[index_clust]
         x_center=0
         y_center=0
@@ -318,7 +306,7 @@ class Map(object):
             
     def radius(self,index_clust): 
         """Calculate the differents radius (max,mean,min) from the center of the cluster"""  
-        list_clusts=self.clusters
+        list_clusts=self.clusters()
         cluster=list_clusts[index_clust]                            
         centroide=self.center(index_clust)
         dist_max=0
@@ -360,9 +348,9 @@ class Map(object):
                 hemi2.append(wrap[index])   #collect the cells of the other side
         return hemi1,hemi2
         
-    def cordon(self,frman_available,index_clust):
+    def cordon(self,index_clust):
         """Select the cases where the firemen will go to"""
-        frm_nbr=self.headcount()
+        frm_nbr=self.headcount(index_clust)
         temp_wrp=self.wrapping(index_clust)
         wrp=temp_wrp[2]
         perimeter=len(wrp)
@@ -393,28 +381,31 @@ class Map(object):
 
         
     def call(self):
-        """attributs to each fireman the case of the cordon which will call the fireman"""
+        """attributs to each fireman the case of the cluster's cordon which will call the fireman"""
         frman_available=copy.copy(self.fireman_list)
-        cordon_frm=self.cordon()
+        list_clusts=self.clusters()
+        nbr_clusts=len(list_clusts)
+        for index_cluster in range (nbr_clusts):
+            cordon_frm=self.cordon(index_cluster)
         
-        for spot in cordon_frm:     #each spot will call the nearest fireman 
-            dist=float('inf')
-            frman=None
-            for temp_frman in frman_available:
-                temp_dist = frm.distance(spot.x,spot.y,temp_frman.x,temp_frman.y)
-                if temp_dist<dist:
-                    frman=temp_frman
-                    dist=temp_dist
+            for spot in cordon_frm:     #each spot will call the nearest fireman 
+                dist=float('inf')
+                frman=None
+                for temp_frman in frman_available:
+                    temp_dist = frm.distance(spot.x,spot.y,temp_frman.x,temp_frman.y)
+                    if temp_dist<dist:
+                        frman=temp_frman
+                        dist=temp_dist
                     
-            if(frman == None): break    #if there are no firemen available left, the attribution of spots is finished
+                    if(frman == None): break    #if there are no firemen available left, the attribution of spots is finished
         
-            cell_frman=self.search(frman.x,frman.y) 
-            list_near=cell_frman.get_near(self)
+                cell_frman=self.search(frman.x,frman.y) 
+                list_near=cell_frman.get_near(self)
             
-            frman.go_to_fire(cell_frman,list_near,spot)     #the fireman will go to the spot calling him
-            frman.check_bounds(self.size-1)
-            frman.put_out_fire(cell_frman,list_near,self)
+                frman.go_to_fire(cell_frman,list_near,spot)     #the fireman will go to the spot calling him
+                frman.check_bounds(self.size-1)
+                frman.put_out_fire(cell_frman,list_near,self)
             
-            frman_available.remove(frman)
+                frman_available.remove(frman)
             
         return cordon_frm
