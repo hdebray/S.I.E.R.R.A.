@@ -7,8 +7,28 @@ import numpy as np
 import random as rdm
 
 def distance(x1,y1,x2,y2):  
-    """Return the euclidian distance between points 1 and 2"""
+    """
+    Returns the euclidian distance between points 1 and 2
+    
+    :param x1: integer
+    :param y1: integer
+    :param x2: integer
+    :param y2: integer
+    :return: the distance between the points (x1,y1) and (x2,y2)
+    
+    Tests
+    ---
+    >>>distance(0,0,0,0)
+    0
+    
+    >>>distance(0,1,0,0)
+    1
+    
+    >>>distance(0,0,1,1) == np.sqrt(2)
+    True
+    """
     return np.sqrt((x1-x2)**2 + (y1-y2)**2)
+
 
 
 class Fireman(object):
@@ -16,8 +36,14 @@ class Fireman(object):
     The Fireman class describes the firemen. They are defined by their name, their coodinates,
     and their health points.
     """
-    def __init__(self,name,x,y,hp=20):
-        """The constructor."""
+    def __init__(self,name,x,y,hp=20.):
+        """The constructor.
+        
+        :param name: string
+        :param x: integer, first coordinate
+        :param y: integer, second coordinate
+        :param hp: float, health points
+        """
         self.name = str(name)     #the name is equal to an id
         self.x = x
         self.y = y
@@ -28,7 +54,11 @@ class Fireman(object):
         return "{}".format(self.name)
         
     def movement(self,other,n=1):
-        """Movement of the fireman to an other cell, by n step(s)"""
+        """Movement of the fireman to an other cell, by n step(s)
+        
+        :param other: cell
+        :param n: integer
+        """
         if self.x < other.x and self.y < other.y:
             self.x,self.y = self.x+n,self.y+n
         elif self.x < other.x and self.y > other.y:
@@ -47,14 +77,20 @@ class Fireman(object):
             self.y = self.y+n
             
     def check_bounds(self,maximum):
-        """Make sure that the fireman can't go outside the map"""
+        """Make sure that the fireman can't go outside the map
+        
+        :param maximum: integer (size of the map)
+        """
         if(self.x < 0): self.x = 0
         if(self.x > maximum): self.x = maximum
         if(self.y < 0): self.y = 0
         if(self.y > maximum): self.y = maximum
         
     def update(self,map):
-        """Main function of the fireman, to call other functions"""
+        """Main function of the fireman, to call other functions
+        
+        :param map: map        
+        """
         own_cell = map.search(self.x,self.y)     #cell corresponding to fireman's position
         near = own_cell.get_near(map)               #cells near the fireman
         
@@ -66,7 +102,11 @@ class Fireman(object):
 
         
     def search_fire(self,burn_list):
-        """Search the closest burning cell, based on the fireman's distance with every burning cells"""
+        """Search the closest burning cell, based on the fireman's distance with every burning cells
+        
+        :param burn_list: list of cells
+        :return: the nearest burning cell
+        """
         dist = float('inf')
         cell = None
         
@@ -79,7 +119,12 @@ class Fireman(object):
             
             
     def go_to_fire(self,cell,list_near,cell_fire):
-        """Manage the movement of the fireman, based on his own position and his objective"""
+        """Manage the movement of the fireman, based on his own position and his objective
+        
+        :param cell: cell of the fireman
+        :param list_near: list of neighboring cells
+        :param cell_fire: list of burning cells
+        """
         if(cell.state > 0):        #fireman burned by the intensity of the fire
             if(cell.charred == True):
                 self.hp -= 0.5          #charred cell only burn by half of the intensity
@@ -108,7 +153,12 @@ class Fireman(object):
                     
                     
     def put_out_fire(self,cell,list_near,map):
-        """Calculate the near cells  where the fire must disappear"""
+        """Calculate the near cells  where the fire must disappear
+        
+        :param cell: cell of the fireman
+        :param list_near: lit of neighboring cells
+        :param map: map
+        """
         burning = []      #list of burning cells near the fireman
         for square in list_near:
             if(square.state > 0 and square.charred == False):      #if it's burning, but not charred yet
