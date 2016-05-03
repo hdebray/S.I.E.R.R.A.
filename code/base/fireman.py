@@ -12,13 +12,19 @@ def distance(x1,y1,x2,y2):
 
 
 class Fireman(object):
+    """
+    The Fireman class describes the firemen. They are defined by their name, their coodinates,
+    and their health points.
+    """
     def __init__(self,name,x,y,hp=20):
+        """The constructor."""
         self.name = str(name)     #the name is equal to an id
         self.x = x
         self.y = y
         self.hp = hp        #number of hit points. if hp = 0, the fireman dies
         
     def __str__(self):
+        """The display: displays the firman's name"""
         return "{}".format(self.name)
         
     def movement(self,other,n=1):
