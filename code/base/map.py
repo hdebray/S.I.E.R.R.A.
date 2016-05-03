@@ -252,27 +252,30 @@ class Map(object):
 
            
     """
-    Crée une liste de cases sur lesquelles les pompiers doivent aller
+    Create a list of cells where the firemen will have to go
     """
-    def center(self):                               #search for the center of burning cells group
+    def center(self):                               
+        """Calculate the center of mass of the cluster"""
         x_center=0
         y_center=0
         for cell in self.burn_list:
-            x_center+=cell.x/len(self.burn_list)
+            x_center+=cell.x/len(self.burn_list)     #calculate the mean coordonates
             y_center+=cell.y/len(self.burn_list)
         cent=[int(x_center),int(y_center)]
         return cent
             
-    def radius(self):                               
+    def radius(self): 
+        """Calculate the differents radius (max,mean,min) from the center of the cluster"""                              
         centroide=self.center()
         dist_max=0
         dist_min=0
         for cell in self.burn_list:
-            dist_max=max(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_max)
-            dist_min=min(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_min)
+            dist_max=max(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_max)    #search for the longest distance
+            dist_min=min(frm.distance(centroide[0],centroide[1],cell.x,cell.y),dist_min)    #search for the shortest distance
         return dist_max,dist_min
         
     def wrapping(self):
+        """Collect the list of cases which distance with the center is equal to the radius"""
         wrap_max=[]
         wrap_min=[]
         wrap_moy=[]
@@ -283,45 +286,48 @@ class Map(object):
         rad_moy=(rad_max+rad_min)/2
         for cellmap in self.cell_list:
             dist_cent=frm.distance(centroide[0],centroide[1],cellmap.x,cellmap.y)
-            if dist_cent<=rad_max+1 and dist_cent>=rad_max-0.1:
+            if dist_cent<=rad_max+1 and dist_cent>=rad_max-0.1:     #generate outter wrap
                 wrap_max.append(cellmap)
-            if dist_cent<=rad_min+1 and dist_cent>=rad_min-0.1:
+            if dist_cent<=rad_min+1 and dist_cent>=rad_min-0.1:     #generate inner wrap
                 wrap_min.append(cellmap)
-            if dist_cent<=rad_moy+1 and dist_cent>=rad_moy-0.1:
+            if dist_cent<=rad_moy+1 and dist_cent>=rad_moy-0.1:     #generate mean wrap
                 wrap_moy.append(cellmap)
             
         return wrap_max,wrap_min,wrap_moy
         
     def hemicycles(self,wrap):
+        """Allows the wrap to be ordinated (but divide the wrap in two parts)"""
         hemi1=[]
         hemi2=[]
         for index in range(len(wrap)):
             if index%2==1:
-                hemi1.append(wrap[index])
+                hemi1.append(wrap[index])   #collect the cells of one side
             if index%2==0:
-                hemi2.append(wrap[index])
+                hemi2.append(wrap[index])   #collect the cells of the other side
         return hemi1,hemi2
         
     def cordon(self):
-        frm_nbr=len(self.fireman_list)
+        """Select the cases where the firemen will go to"""
+        frman_available=copy.copy(self.fireman_list)
+        frm_nbr=len(frman_available)
         temp_wrp=self.wrapping()
         wrp=temp_wrp[2]
         perimeter=len(wrp)
-        interval=int(perimeter/frm_nbr)
+        interval=int(perimeter/frm_nbr)     #calculate the interval between two firemen
         temp=self.hemicycles(wrp)
         left_cordon,right_cordon=temp[0],temp[1]
         highest_lft_cord=self.search(0,0)
         for cell in left_cordon:
-            if cell.y>=highest_lft_cord.y:
+            if cell.y>=highest_lft_cord.y:      #search for the next neighbour cell in distance the radius (in the first hemicycle)
                 highest_lft_cord=cell
         highest_rght_cord=self.search(0,0)
         for cell in right_cordon:
-            if cell.y>=highest_rght_cord.y:
+            if cell.y>=highest_rght_cord.y:     #search for the next neighbour cell in distance the radius (in the second hemicycle)
                 highest_rght_cord=cell
             
             
         cord=[]
-        cord.append(highest_lft_cord)    
+        cord.append(highest_lft_cord)       #join both left and right cordons
         for leftcell in left_cordon:
             if frm.distance(leftcell.x,leftcell.y,cord[-1].x,cord[-1].y)>=interval:
                 cord.append(leftcell)
@@ -334,10 +340,11 @@ class Map(object):
 
         
     def call(self):
+        """attributs to each fireman the case of the cordon which will call the fireman"""
         frman_available=copy.copy(self.fireman_list)
         cordon_frm=self.cordon()
         
-        for spot in cordon_frm:
+        for spot in cordon_frm:     #each spot will call the nearest fireman 
             dist=float('inf')
             frman=None
             for temp_frman in frman_available:
@@ -346,12 +353,12 @@ class Map(object):
                     frman=temp_frman
                     dist=temp_dist
                     
-            if(frman == None): break
+            if(frman == None): break    #if there are no firemen available left, the attribution of spots is finished
         
             cell_frman=self.search(frman.x,frman.y) 
             list_near=cell_frman.get_near(self)
             
-            frman.go_to_fire(cell_frman,list_near,spot)
+            frman.go_to_fire(cell_frman,list_near,spot)     #the fireman will go to the spot calling him
             frman.check_bounds(self.size-1)
             frman.put_out_fire(cell_frman,list_near,self)
             
