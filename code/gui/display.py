@@ -25,7 +25,8 @@ cpool = ['#2a0d03','#318fe5', '#51c353', '#4e8539', '#b6aba2',
 
 
 def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
-    """Display the map with the matrix of values.
+    """
+    Display the map with the matrix of values.
     svg to save the image, name for specific name, hide to hide the image, colorbar to show the colorbar
     """
     map.calc_mat()      #update the matrix
@@ -92,6 +93,9 @@ def compile(delete=False):
         
                 
 def destroy():
+    """
+    This function delete every images in the images/ directory
+    """
     directory = 'images/'
     for file in os.listdir(directory):
         if(file[-3:] == 'png'):     #if the file have a 'png' extension
@@ -102,20 +106,24 @@ def destroy():
                 
                 
 class Window(qtg.QWidget):
+    """
+    Main class to create a graphic interface
+    """
     def __init__(self):
         super(Window, self).__init__()
         
         self.dim = int(qtg.QDesktopWidget().screenGeometry().height() / 2)  #max dimension of images
         self.set_wind = True
         self.initUI()
-        
-        
     
     def initUI(self):
-        
+        """
+        Initiate the default interface
+        """
         grid = qtg.QGridLayout()            #grid layout to display options
         grid.setSpacing(20)
         
+        #simulation size setting
         self.size_label = qtg.QLabel("Size:")        #label for anything
         self.size_label.setAlignment(qtc.Qt.AlignCenter)     #self-explicit...
         self.size = qtg.QSpinBox()
@@ -123,9 +131,11 @@ class Window(qtg.QWidget):
         self.size.setMaximum(300)
         self.size.setValue(50)
         self.size.setToolTip('Size of the map')        #info on hover
+        self.size.valueChanged().connect(self.set_max)
         grid.addWidget(self.size_label, 0,0)
         grid.addWidget(self.size, 0,1)
         
+        #number of fire on simulation start
         self.fire_label = qtg.QLabel("Fire:")
         self.fire_label.setAlignment(qtc.Qt.AlignCenter)
         self.fire = qtg.QSpinBox()
@@ -137,48 +147,56 @@ class Window(qtg.QWidget):
         grid.addWidget(self.fire_label, 0,2)
         grid.addWidget(self.fire, 0,3)
         
+        #number of firemen on simulation start
         self.frman_label = qtg.QLabel("Firemen:")
         self.frman_label.setAlignment(qtc.Qt.AlignCenter)  
         self.frman = qtg.QSpinBox()
         self.frman.setMinimum(0)
-        self.frman.setMaximum(int(self.size.value() * 2))
+        self.frman.setMaximum(int(self.size.value()*2))
         self.frman.setValue( int(np.ceil(self.size.value()/3)) )
         self.frman.setToolTip('Number of firemen on start')
         self.frman.setDisabled(True)
         grid.addWidget(self.frman_label, 0,4)
         grid.addWidget(self.frman, 0,5)
         
+        #toggle default settings
         self.default = qtg.QCheckBox("Default settings")
         self.default.toggle()
-        self.default.stateChanged.connect(self.set_enable)
+        self.default.stateChanged.connect(self.set_default)
         grid.addWidget(self.default, 1,0, 1,3)
         
+        #toggle wind
         self.wind = qtg.QCheckBox("Wind")
         self.wind.toggle()
-        self.wind.stateChanged.connect(self.enable_wind)
         grid.addWidget(self.wind, 2,0, 1,3)
            
+        #start the simulation
         self.start = qtg.QPushButton("START")
+        self.frman.setToolTip('You must have Imagemagick installed on your computer')
         self.start.clicked.connect(self.solve)
         grid.addWidget(self.start, 1,6)
         
+        #compile the images
         self.compile = qtg.QPushButton("Compile")
         self.compile.setDisabled(True)
         self.frman.setToolTip('Compile the result into a GIF')
         self.compile.clicked.connect(compile)
         grid.addWidget(self.compile, 2,6)
         
+        #add gird layout to main layout (vertical)
         main_layout = qtg.QVBoxLayout()
         main_layout.setSpacing(20)
         main_layout.addStretch(1)
         main_layout.addLayout(grid)
         
+        #add logo image
         img_name = "gui/S.png"
         self.img_label = qtg.QLabel()
         self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(self.dim,self.dim))
         self.img_label.setAlignment(qtc.Qt.AlignCenter)
         main_layout.addWidget(self.img_label)
         
+        #set slider below image
         self.slider = qtg.QSlider(qtc.Qt.Horizontal)
         self.slider.setMinimum(0)
         self.slider.setMaximum(0)
@@ -196,12 +214,18 @@ class Window(qtg.QWidget):
         
         
     def center(self):
+        """
+        This function center the window in the centr of the screen
+        """
         rect = self.frameGeometry()         #size of widget
         center = qtg.QDesktopWidget().availableGeometry().center()      #center of screen resolution
         rect.moveCenter(center)     #move center point of rect to center point of screen
         self.move(rect.topLeft())     #move widget to top left corner of rect
         
-    def set_enable(self):
+    def set_default(self):
+        """
+        Activate and calculate the default values for fire and firemen numbers
+        """
         if(self.default.isChecked()):
             self.fire.setDisabled(True)
             self.fire.setValue(int(np.ceil(self.size.value()/50)))
@@ -211,11 +235,17 @@ class Window(qtg.QWidget):
             self.fire.setDisabled(False)
             self.frman.setDisabled(False)
             
-    def enable_wind(self):
-        if(self.wind.isChecked()): self.set_wind = True
-        else: self.set_wind = False
+    def set_max(self):
+        """
+        Change the max value allowed to fire and firemen when the map size change
+        """
+        self.fire.setMaximum( int(self.size.value()/15) )
+        self.frman.setMaximum(int(self.size.value()*2))
             
     def set_slider(self, value):
+        """
+        Configure the slider with the max value when the simulation is finished
+        """
         self.slider.setMinimum(0)
         self.slider.setMaximum(value)
         self.slider.setValue(0)
@@ -223,12 +253,19 @@ class Window(qtg.QWidget):
         self.img_label.setPixmap(qtg.QPixmap("images/img100.png").scaled(self.dim,self.dim,aspectRatioMode=qtc.Qt.KeepAspectRatio))
         
     def change_img(self):
+        """
+        Change the displayed image based on the value of the slider
+        """
         value = self.slider.value()
         img_name = "images/img"+str(value+100)+".png"
         self.img_label.setPixmap(qtg.QPixmap(img_name).scaled(self.dim,self.dim,aspectRatioMode=qtc.Qt.KeepAspectRatio))
         
         
     def solve(self):
+        """
+        Main functionnality of the app: solve the simulation with the input parameters
+        print() function are for debugging purpose only
+        """
         self.start.setDisabled(True)        #disable start button while calculating
         self.compile.setDisabled(True)
         
