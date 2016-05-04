@@ -26,8 +26,14 @@ cpool = ['#2a0d03','#318fe5', '#51c353', '#4e8539', '#b6aba2',
 
 def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
     """
-    Display the map with the matrix of values.
-    svg to save the image, name for specific name, hide to hide the image, colorbar to show the colorbar
+    Display the map as 2D array, with a specific color for each Cell nature and state
+    
+    :param map: Map object which must be displayed
+    :param svg: boolean, determine if the image must be saved or not
+    :param name: string, add an additional name to 'imgXXX.png'
+    :param hide: boolean, toggle the display of the drawn image
+    :param colorbar: boolean, toggle the colorbar used at the right of the image
+    :param notif: string array, contains every notification which must be displayed
     """
     map.calc_mat()      #update the matrix
     mx = int( np.amax(map.map) )      #max and min values of the matrix
@@ -79,9 +85,12 @@ def draw(map,svg=True,name='',hide=True,colorbar=False,notif=[]):
 
 
 def compile(delete=False):
-    """Convert every png files in a single gif, with an option to delete after the conversion is done
+    """
+    Convert every png files in a single gif, with an option to delete after the conversion is done
     YOU SHALL HAVE Imagemagick INSTALLED TO CONVERT THE PNGs INTO A GIF !
         http://www.imagemagick.org/script/binary-releases.php
+        
+    :param delete: boolean, toggle the suppression of the images once the compilation is done
     """
     print('Compile result...')
     
@@ -107,9 +116,11 @@ def destroy():
                 
 class Window(qtg.QWidget):
     """
-    Main class to create a graphic interface
+    The Window class construct the main GUI window that is displayed on screen, it allow the user to change
+    the simulation's options and see the result
     """
     def __init__(self):
+        """The constructor."""
         super(Window, self).__init__()
         
         self.dim = int(qtg.QDesktopWidget().screenGeometry().height() / 2)  #max dimension of images
@@ -118,7 +129,7 @@ class Window(qtg.QWidget):
     
     def initUI(self):
         """
-        Initiate the default interface
+        Initiate the default interface with every buttons
         """
         grid = qtg.QGridLayout()            #grid layout to display options
         grid.setSpacing(20)
@@ -254,7 +265,9 @@ class Window(qtg.QWidget):
             
     def set_slider(self, value):
         """
-        Configure the slider with the max value when the simulation is finished
+        Configure the slider when the simulation is finished
+        
+        :param value: integer, set the max value of the slider
         """
         self.slider.setMinimum(0)
         self.slider.setMaximum(value)
@@ -289,14 +302,14 @@ class Window(qtg.QWidget):
         
         print('Calculating...')
         i=0
-        while(len(map.burn_list) > 0 and len(map.fireman_list) > 0):
+        while(len(map.burn_list) > 0 and len(map.fireman_list) > 0):        #main simulation loop
             text = map.turn()
             draw(map,notif=text)
             
             i+=1
             if(i>5*map.size):break      #seatbelt, to prevent accidents
         
-        self.set_slider(i)
+        self.set_slider(i)      #configure the slider
         
         print('Complete !')
         self.start.setDisabled(False)
