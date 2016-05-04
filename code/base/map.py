@@ -131,13 +131,13 @@ class Map(object):
     """
     Update of the simulation's state
     """
-    def ini(self,heart_num=0,firemen=0,wind=True,saving=True):
+    def ini(self,heart_num=0,firemen=0,wind=True,restart=False):
         """Initialisation of the fire cells and the firemen
         
         :param heart_num: integer, number of hearts of the fire
         :param firement: integer, number of firemen present
         :param wind: boolean, True if the wind is active
-        :param saving: boolean, Tru if the initial state is saved
+        :param restart: boolean, True if the initial state is the same as before
         """
         if(heart_num <= 0): heart_num = int( np.ceil(self.size/50) )
         self.johnny(heart_num)               #ignite the fire
@@ -145,8 +145,11 @@ class Map(object):
         if(firemen <= 0): firemen = int( np.ceil(self.size/3) )
         self.create_fireman(firemen)     #create the firemen
         
-        if saving:
-            self.save()
+        if(restart):        #override the map and restore the one before
+            self.construct(0)
+        
+        db.reset()
+        self.save()
         
         self.wind_active = wind             #activate wind
         self.wind = rnd.randint(0,7)        #input random wind
