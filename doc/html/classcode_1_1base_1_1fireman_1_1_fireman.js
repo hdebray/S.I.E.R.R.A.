@@ -1,6 +1,6 @@
 var classcode_1_1base_1_1fireman_1_1_fireman =
 [
-    [ "__init__", "classcode_1_1base_1_1fireman_1_1_fireman.html#a73e4b453d679e4c8c8e354e46ee752e9", null ],
+    [ "__init__", "classcode_1_1base_1_1fireman_1_1_fireman.html#ae9a54521a7bb94c895ead7dbe4822f50", null ],
     [ "__str__", "classcode_1_1base_1_1fireman_1_1_fireman.html#a87625d2ff07daa5c07ad03fdd30ac3d2", null ],
     [ "check_bounds", "classcode_1_1base_1_1fireman_1_1_fireman.html#a766469597d499afe8ef0b818bfc7bfba", null ],
     [ "go_to_fire", "classcode_1_1base_1_1fireman_1_1_fireman.html#a2f8b95b0ecda8672ed9a499fba6252c4", null ],

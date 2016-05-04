@@ -30,7 +30,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="S.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="petitS.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">SIERRA
    </div>
@@ -123,8 +123,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af73c70af1316c3ae05e5de4d801e13e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa60e38e5c505334f626c2be2b2b66dee"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1cell_1_1_cell.html#aa60e38e5c505334f626c2be2b2b66dee">get_near</a> (self, map)</td></tr>
 <tr class="separator:aa60e38e5c505334f626c2be2b2b66dee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06efabffafbabe3b9ed3091c4fd4933b"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1cell_1_1_cell.html#a06efabffafbabe3b9ed3091c4fd4933b">propagation</a> (self, map, wind_active)</td></tr>
-<tr class="separator:a06efabffafbabe3b9ed3091c4fd4933b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a810b6df37a44241b79172fb5e2473684"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1cell_1_1_cell.html#a810b6df37a44241b79172fb5e2473684">propagation</a> (self, mape)</td></tr>
+<tr class="separator:a810b6df37a44241b79172fb5e2473684"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5466d029f3c23c3ba552b2e66badf273"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1cell_1_1_cell.html#a5466d029f3c23c3ba552b2e66badf273">in_fire</a> (self)</td></tr>
 <tr class="separator:a5466d029f3c23c3ba552b2e66badf273"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -199,7 +199,14 @@ and if they are charred or not (using a boolean).
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">The constructor.</pre> 
+<pre class="fragment">The constructor.
+
+:param x: integer
+:param y: integer coordinates
+:param nat: integer in [0,3], nature of the cell, following the convention
+:param state: integer in [0,5], burning state of the cell
+:param charred: boolean, True if the cell is charred
+</pre> 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -242,7 +249,11 @@ and if they are charred or not (using a boolean).
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Utility function to get the list of cells near the "self" cell</pre> 
+<pre class="fragment">Utility function to get the list of cells near the "self" cell
+
+:param map: map
+:return list of the near cells
+</pre> 
 </div>
 </div>
 <a class="anchor" id="a5466d029f3c23c3ba552b2e66badf273"></a>
@@ -261,7 +272,7 @@ and if they are charred or not (using a boolean).
 <pre class="fragment">This function returns a boolean determining if the cell is on fire</pre> 
 </div>
 </div>
-<a class="anchor" id="a06efabffafbabe3b9ed3091c4fd4933b"></a>
+<a class="anchor" id="a810b6df37a44241b79172fb5e2473684"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -275,13 +286,7 @@ and if they are charred or not (using a boolean).
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>map</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>wind_active</em>&#160;</td>
+          <td class="paramname"><em>mape</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -290,11 +295,14 @@ and if they are charred or not (using a boolean).
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">This function calculates the growing intensity of burning cells, and spreads the fire around them</pre> 
+<pre class="fragment">This function calculates the growing intensity of burning cells, and spreads the fire around them
+
+:param map: map
+</pre> 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>code/base/cell.py</li>
+<li>C:/Users/Amaury/Documents/GitHub/S.I.E.R.R.A/code/base/cell.py</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
