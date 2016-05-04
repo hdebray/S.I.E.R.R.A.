@@ -102,7 +102,7 @@ def destroy():
             path = directory+str(file)
             os.remove(path)         #remove the file
             
-    print("Detroyed")
+    print("Destroyed")
                 
                 
 class Window(qtg.QWidget):
@@ -127,11 +127,11 @@ class Window(qtg.QWidget):
         self.size_label = qtg.QLabel("Size:")        #label for anything
         self.size_label.setAlignment(qtc.Qt.AlignCenter)     #self-explicit...
         self.size = qtg.QSpinBox()
-        self.size.setMinimum(0)
+        self.size.setMinimum(1)
         self.size.setMaximum(300)
         self.size.setValue(50)
         self.size.setToolTip('Size of the map')        #info on hover
-        self.size.valueChanged().connect(self.set_max)
+        self.size.valueChanged.connect(self.set_max)
         grid.addWidget(self.size_label, 0,0)
         grid.addWidget(self.size, 0,1)
         
@@ -139,8 +139,8 @@ class Window(qtg.QWidget):
         self.fire_label = qtg.QLabel("Fire:")
         self.fire_label.setAlignment(qtc.Qt.AlignCenter)
         self.fire = qtg.QSpinBox()
-        self.fire.setMinimum(0)
-        self.fire.setMaximum( int(self.size.value()/15) )
+        self.fire.setMinimum(1)
+        self.fire.setMaximum( int(np.ceil(self.size.value()/15)) )
         self.fire.setValue( int(np.ceil(self.size.value()/50)) )
         self.fire.setToolTip('Number of burning cell on start')
         self.fire.setDisabled(True)         #disable
@@ -151,8 +151,8 @@ class Window(qtg.QWidget):
         self.frman_label = qtg.QLabel("Firemen:")
         self.frman_label.setAlignment(qtc.Qt.AlignCenter)  
         self.frman = qtg.QSpinBox()
-        self.frman.setMinimum(0)
-        self.frman.setMaximum(int(self.size.value()*2))
+        self.frman.setMinimum(1)
+        self.frman.setMaximum( int(np.ceil(self.size.value()*2)) )
         self.frman.setValue( int(np.ceil(self.size.value()/3)) )
         self.frman.setToolTip('Number of firemen on start')
         self.frman.setDisabled(True)
@@ -172,18 +172,24 @@ class Window(qtg.QWidget):
            
         #start the simulation
         self.start = qtg.QPushButton("START")
-        self.frman.setToolTip('You must have Imagemagick installed on your computer')
+        self.start.setToolTip('You must have Imagemagick installed on your computer')
         self.start.clicked.connect(self.solve)
         grid.addWidget(self.start, 1,6)
+        
+        #restart the simulation with same map as before
+        self.restart = qtg.QCheckBox("Use same map")
+        self.restart.setToolTip("Restart the simulation with the exact same map")
+        self.restart.setDisabled(True)
+        grid.addWidget(self.restart, 1,7, 1,3)
         
         #compile the images
         self.compile = qtg.QPushButton("Compile")
         self.compile.setDisabled(True)
-        self.frman.setToolTip('Compile the result into a GIF')
+        self.compile.setToolTip('Compile the result into a GIF')
         self.compile.clicked.connect(compile)
         grid.addWidget(self.compile, 2,6)
         
-        #add gird layout to main layout (vertical)
+        #add grid layout to main layout (vertical)
         main_layout = qtg.QVBoxLayout()
         main_layout.setSpacing(20)
         main_layout.addStretch(1)
@@ -237,10 +243,14 @@ class Window(qtg.QWidget):
             
     def set_max(self):
         """
-        Change the max value allowed to fire and firemen when the map size change
+        Change the max value and the value allowed to fire and firemen when the map size change
         """
         self.fire.setMaximum( int(self.size.value()/15) )
-        self.frman.setMaximum(int(self.size.value()*2))
+        self.frman.setMaximum( int(self.size.value()*2) )
+        if(self.default.isChecked()):
+            self.frman.setValue( int(np.ceil(self.size.value()/3)) )
+            self.fire.setValue( int(np.ceil(self.size.value()/50)) )
+            if(self.fire.value == 0): self.fire.setValue(1)
             
     def set_slider(self, value):
         """
@@ -273,7 +283,7 @@ class Window(qtg.QWidget):
         destroy()
         map = mp.Map(self.size.value())
         map.creation()
-        map.ini(self.fire.value(),self.frman.value(),self.wind.isChecked())
+        map.ini(self.fire.value(),self.frman.value(),self.wind.isChecked(),self.restart.isChecked())
         
         draw(map)
         
@@ -291,4 +301,5 @@ class Window(qtg.QWidget):
         print('Complete !')
         self.start.setDisabled(False)
         self.compile.setDisabled(False)
+        self.restart.setDisabled(False)
         
