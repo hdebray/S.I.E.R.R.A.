@@ -20,7 +20,7 @@ class Map(object):
     It is defined by its size, a matrix used for display, the list of the cells 
     of the terrain, the list of firemen present on the terrain, the count (which is 
     the number of iterations), the direction of the wind (0:N, 1:NE, 2:E, 3:SE,4:S, 
-    5:SW, 6:W, 7:NW), and if the wind is actie or not.
+    5:SW, 6:W, 7:NW), and if the wind is active or not.
     """
     def __init__(self,size):
         """The constructor.
@@ -51,7 +51,13 @@ class Map(object):
         
                 
     def biome(self,alti,forest,i,j):
-        """Create the map by checking the height and moisture value of every cell"""
+        """Create the map by checking the height and moisture value of every cell
+        
+        :param alti: 2D array with value in [0,1], represent height of the map
+        :param forest: 2D array with value in [0,1], represent humidity of the map
+        :param i: int, the row coordinate of a cell
+        :param j: int, the column coordinate of a cell
+        """
         n = 0
         if(alti[i,j] < 0.25):        #water
             n = 0
@@ -68,7 +74,11 @@ class Map(object):
         return n
         
     def heightmap(self,amp=1,freq=1/2.0):
-        """Create a heightmap by adding successive noise value, with differents amplitude and frequencies"""
+        """Create a heightmap by adding successive noise value, with differents amplitude and frequencies
+        
+        :param amp: float, starting amplitude to create the map
+        :param freq: float, starting frequency to create the map        
+        """
         noise = np.zeros([self.size,self.size])     #initialisation
         while(self.size*freq > 1 and amp > 0.01):     #while the resolution is greater than 1
             noise += self.calc_noise(self.size*freq) * amp
@@ -79,7 +89,10 @@ class Map(object):
         
     def calc_noise(self,res):
         """Calcul a value for a certain resolution (size*freq)
-        A new seed is generated for every noise"""
+        A new seed is generated for every noise
+        
+        :param res: float, determine the detail's resolution of the generated noise
+        """
         perm = np.random.permutation(256)           #permutation table (world seed)
         self.white = self.white_noise(self.size,perm)                #white noise
         
@@ -92,7 +105,11 @@ class Map(object):
         
     def smooth(self,y,x):
         """This function is smoothing the white noise, by using a bilinear interpolation 
-        for a better result"""
+        for a better result
+        
+        :param y: float coordinate to interpolate
+        :param x: float coordinate to interpolate
+        """
         x0 = int(x)         #integer part
         frac_x = x - x0     #float part
         y0 = int(y)
@@ -109,12 +126,23 @@ class Map(object):
         return result
         
     def lerp(self,p,a,b):
-        """Interpolation of the value of point p, based on values of points a and b"""
+        """Interpolation of the value of point p, based on values of points a and b
+        
+        :param p: float, coordinate of the value to interpolate
+        :param a: int, nearest inferior int
+        :param b: int, nearest superior int
+        :return interpolated value
+        """
         t = (p**2)*(3 - 2*p)            #cubic interpolation, better result than linear 
         return a*(1-t) + b*t            #interpolation
         
     def white_noise(self,dim,perm):
-        """Generate a white noise, based on a permutation table"""
+        """Generate a white noise, based on a permutation table
+        
+        :param dim: int, size of the 2D array
+        :param perm: array, permutation table to generate pseudo-random number
+        :return: the white noise matrix
+        """
         mat = np.zeros([dim,dim])
         for i in range(dim):
             for j in range(dim):
@@ -122,7 +150,11 @@ class Map(object):
         return mat
 
     def distrib(self,mat):
-        """Spread the values of a matrix in range [0,1]"""
+        """Spread the values of a matrix in range [0,1]
+        
+        :param mat: 2D array, input matrix which value should be changed
+        :return: the modified 2D array
+        """
         mx,mn = np.ceil(np.amax(mat)),np.floor(np.amin(mat))
         result = (mat-mn)/(mx-mn)
         return result
