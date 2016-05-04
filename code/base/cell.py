@@ -55,7 +55,7 @@ class Cell(object):
         
         
     
-    def propagation(self,mape):
+    def propagation(self,map):
         """This function calculates the growing intensity of burning cells, and spreads the fire around them
         
         :param map: map
