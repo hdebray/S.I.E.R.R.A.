@@ -12,6 +12,10 @@ def save_map(cell_list,fireman_list,count):
     """
     Save the simulation state with the list of Cell objects and Fireman objects, as well as the iteration 
     count at the moment of the save
+    
+    :param cell_list: array composed of Cell objects
+    :param fireman: array composed of Fireman objects
+    :param count: int, the iteration number at which the simulation is saved
     """
     try:
         con = sql.connect('db/simu.db')
@@ -43,7 +47,11 @@ def save_map(cell_list,fireman_list,count):
         con.close()
         
 def get_cell(value):
-    """fonction pour recupérer l'état de la simulation à une certaine itération"""
+    """
+    This function get the list of Cell objects at an iteration value of the simulation
+    
+    :param value: int, number of iteration at which the list is retrieved
+    """
     try:
         con = sql.connect('db/simu.db')
         cur = con.cursor()
@@ -69,7 +77,11 @@ def get_cell(value):
         con.close()
         
 def get_fireman(value):
-    """fonction pour recupérer l'état de la simulation à une certaine itération"""
+    """
+    This function get the list of Fireman objects at an iteration value of the simulation
+    
+    :param value: int, number of iteration at which the list is retrieved
+    """
     try:
         con = sql.connect('db/simu.db')
         cur = con.cursor()
@@ -95,6 +107,9 @@ def get_fireman(value):
         con.close()
         
 def reset():
+    """
+    This function reset the data base
+    """
     try:
         con = sql.connect('db/simu.db')
         cur = con.cursor()
