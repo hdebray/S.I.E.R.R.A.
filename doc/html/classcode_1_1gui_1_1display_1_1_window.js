@@ -16,6 +16,7 @@ var classcode_1_1gui_1_1display_1_1_window =
     [ "frman", "classcode_1_1gui_1_1display_1_1_window.html#a78c8cac031253f82a0303faafc0b6f5b", null ],
     [ "frman_label", "classcode_1_1gui_1_1display_1_1_window.html#a642dbb9f8a1f87a2cb1cb53c91b10ca0", null ],
     [ "img_label", "classcode_1_1gui_1_1display_1_1_window.html#a9123c848d786a9f8f16cbaa846ca3463", null ],
+    [ "restart", "classcode_1_1gui_1_1display_1_1_window.html#acb77e5b170ac529706d2aa8f09ea328f", null ],
     [ "set_wind", "classcode_1_1gui_1_1display_1_1_window.html#a299c77978ab2dd7f09de98e4df276185", null ],
     [ "size", "classcode_1_1gui_1_1display_1_1_window.html#acf52177222f7bf9752ce38201ec19754", null ],
     [ "size_label", "classcode_1_1gui_1_1display_1_1_window.html#a909642cdef86232183c642cdb4300338", null ],

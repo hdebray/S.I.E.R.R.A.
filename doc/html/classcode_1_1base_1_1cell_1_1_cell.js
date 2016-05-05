@@ -4,7 +4,7 @@ var classcode_1_1base_1_1cell_1_1_cell =
     [ "__str__", "classcode_1_1base_1_1cell_1_1_cell.html#af73c70af1316c3ae05e5de4d801e13e6", null ],
     [ "get_near", "classcode_1_1base_1_1cell_1_1_cell.html#aa60e38e5c505334f626c2be2b2b66dee", null ],
     [ "in_fire", "classcode_1_1base_1_1cell_1_1_cell.html#a5466d029f3c23c3ba552b2e66badf273", null ],
-    [ "propagation", "classcode_1_1base_1_1cell_1_1_cell.html#a810b6df37a44241b79172fb5e2473684", null ],
+    [ "propagation", "classcode_1_1base_1_1cell_1_1_cell.html#aa93ead0f88c28c50e151d0c7f9284db0", null ],
     [ "charred", "classcode_1_1base_1_1cell_1_1_cell.html#a605a84b20d251bed112397bbdd6beca4", null ],
     [ "nat", "classcode_1_1base_1_1cell_1_1_cell.html#a87150d729a017cd1613e0f2732193dc6", null ],
     [ "state", "classcode_1_1base_1_1cell_1_1_cell.html#a77be9c309a8d363b381dbcfedc3ae640", null ],

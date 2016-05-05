@@ -117,8 +117,7 @@ $(document).ready(function(){initNavTree('classcode_1_1gui_1_1display_1_1_window
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af8f7da78bf21a4dc998b870d90823ab9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af8f7da78bf21a4dc998b870d90823ab9"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>__init__</b> (self)</td></tr>
+<tr class="memitem:af8f7da78bf21a4dc998b870d90823ab9"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1gui_1_1display_1_1_window.html#af8f7da78bf21a4dc998b870d90823ab9">__init__</a> (self)</td></tr>
 <tr class="separator:af8f7da78bf21a4dc998b870d90823ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91c6c0e6c98eb5d04c52eaf3b9d570a8"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1gui_1_1display_1_1_window.html#a91c6c0e6c98eb5d04c52eaf3b9d570a8">initUI</a> (self)</td></tr>
 <tr class="separator:a91c6c0e6c98eb5d04c52eaf3b9d570a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -170,6 +169,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:af7e6b113dbbeb169a9b21962c60d9805"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af7e6b113dbbeb169a9b21962c60d9805"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>start</b></td></tr>
 <tr class="separator:af7e6b113dbbeb169a9b21962c60d9805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb77e5b170ac529706d2aa8f09ea328f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb77e5b170ac529706d2aa8f09ea328f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>restart</b></td></tr>
+<tr class="separator:acb77e5b170ac529706d2aa8f09ea328f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea64573ea6f73312afb69c6badf0f3d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aea64573ea6f73312afb69c6badf0f3d6"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>compile</b></td></tr>
 <tr class="separator:aea64573ea6f73312afb69c6badf0f3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,8 +183,26 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a81450f000b2f35ddd334ad55cdc29a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><pre class="fragment">Main class to create a graphic interface
-</pre> </div><h2 class="groupheader">Member Function Documentation</h2>
+<div class="textblock"><pre class="fragment">The Window class construct the main GUI window that is displayed on screen, it allow the user to change
+the simulation's options and see the result
+</pre> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="af8f7da78bf21a4dc998b870d90823ab9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def code.gui.display.Window.__init__ </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">The constructor.</pre> 
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ac7d38a6668323f5cf0093dff586aeb08"></a>
 <div class="memitem">
 <div class="memproto">
@@ -230,7 +250,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Initiate the default interface
+<pre class="fragment">Initiate the default interface with every buttons
 </pre> 
 </div>
 </div>
@@ -264,7 +284,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Change the max value allowed to fire and firemen when the map size change
+<pre class="fragment">Change the max value and the value allowed to fire and firemen when the map size change
 </pre> 
 </div>
 </div>
@@ -291,7 +311,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Configure the slider with the max value when the simulation is finished
+<pre class="fragment">Configure the slider when the simulation is finished
+
+:param value: integer, set the max value of the slider
 </pre> 
 </div>
 </div>

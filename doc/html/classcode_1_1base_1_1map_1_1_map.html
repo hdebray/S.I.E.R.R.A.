@@ -135,8 +135,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:acc4c9e9c8f0d4d9063ad9bceea0cc46d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa69a6566e86542d96e1f3fd35f8228ff"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1map_1_1_map.html#aa69a6566e86542d96e1f3fd35f8228ff">distrib</a> (self, mat)</td></tr>
 <tr class="separator:aa69a6566e86542d96e1f3fd35f8228ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4051da9d9a590fef5a6dcdb502f5be1"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1map_1_1_map.html#ad4051da9d9a590fef5a6dcdb502f5be1">ini</a> (self, heart_num=0, firemen=0, wind=True, saving=True)</td></tr>
-<tr class="separator:ad4051da9d9a590fef5a6dcdb502f5be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7569b10ade3e92b5f2c0303437d42c4e"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1map_1_1_map.html#a7569b10ade3e92b5f2c0303437d42c4e">ini</a> (self, heart_num=0, firemen=0, wind=True, restart=False)</td></tr>
+<tr class="separator:a7569b10ade3e92b5f2c0303437d42c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a884ac5d0a8e8d0f22965249bf015acac"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1map_1_1_map.html#a884ac5d0a8e8d0f22965249bf015acac">turn</a> (self)</td></tr>
 <tr class="separator:a884ac5d0a8e8d0f22965249bf015acac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb7e5785b14702a4ad62d577919467a7"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcode_1_1base_1_1map_1_1_map.html#aeb7e5785b14702a4ad62d577919467a7">johnny</a> (self, n)</td></tr>
@@ -208,7 +208,7 @@ Public Attributes</h2></td></tr>
 It is defined by its size, a matrix used for display, the list of the cells 
 of the terrain, the list of firemen present on the terrain, the count (which is 
 the number of iterations), the direction of the wind (0:N, 1:NE, 2:E, 3:SE,4:S, 
-5:SW, 6:W, 7:NW), and if the wind is actie or not.
+5:SW, 6:W, 7:NW), and if the wind is active or not.
 </pre> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a32a522c41344c6c5db49b05ad78ae2cb"></a>
 <div class="memitem">
@@ -281,7 +281,13 @@ the number of iterations), the direction of the wind (0:N, 1:NE, 2:E, 3:SE,4:S,
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Create the map by checking the height and moisture value of every cell</pre> 
+<pre class="fragment">Create the map by checking the height and moisture value of every cell
+
+:param alti: 2D array with value in [0,1], represent height of the map
+:param forest: 2D array with value in [0,1], represent humidity of the map
+:param i: int, the row coordinate of a cell
+:param j: int, the column coordinate of a cell
+</pre> 
 </div>
 </div>
 <a class="anchor" id="a25d5f3ba392f709ace65028e7887480d"></a>
@@ -325,7 +331,10 @@ Only used for display</pre>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">Calcul a value for a certain resolution (size*freq)
-A new seed is generated for every noise</pre> 
+A new seed is generated for every noise
+
+:param res: float, determine the detail's resolution of the generated noise
+</pre> 
 </div>
 </div>
 <a class="anchor" id="a13f3716b33a09ca7d0b0076462d4e167"></a>
@@ -493,7 +502,11 @@ A new seed is generated for every noise</pre>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Spread the values of a matrix in range [0,1]</pre> 
+<pre class="fragment">Spread the values of a matrix in range [0,1]
+
+:param mat: 2D array, input matrix which value should be changed
+:return: the modified 2D array
+</pre> 
 </div>
 </div>
 <a class="anchor" id="a07cc4c3de15bd25231c7ab7e5a78cff6"></a>
@@ -525,7 +538,11 @@ A new seed is generated for every noise</pre>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Create a heightmap by adding successive noise value, with differents amplitude and frequencies</pre> 
+<pre class="fragment">Create a heightmap by adding successive noise value, with differents amplitude and frequencies
+
+:param amp: float, starting amplitude to create the map
+:param freq: float, starting frequency to create the map        
+</pre> 
 </div>
 </div>
 <a class="anchor" id="a928f5323917220282ba9ecea6737f31d"></a>
@@ -560,7 +577,7 @@ A new seed is generated for every noise</pre>
 <pre class="fragment">Allows the wrap to be ordinated (but divide the wrap in two parts)</pre> 
 </div>
 </div>
-<a class="anchor" id="ad4051da9d9a590fef5a6dcdb502f5be1"></a>
+<a class="anchor" id="a7569b10ade3e92b5f2c0303437d42c4e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -592,7 +609,7 @@ A new seed is generated for every noise</pre>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>saving</em> = <code>True</code>&#160;</td>
+          <td class="paramname"><em>restart</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -606,7 +623,7 @@ A new seed is generated for every noise</pre>
 :param heart_num: integer, number of hearts of the fire
 :param firement: integer, number of firemen present
 :param wind: boolean, True if the wind is active
-:param saving: boolean, Tru if the initial state is saved
+:param restart: boolean, True if the initial state is the same as before
 </pre> 
 </div>
 </div>
@@ -675,7 +692,13 @@ A new seed is generated for every noise</pre>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Interpolation of the value of point p, based on values of points a and b</pre> 
+<pre class="fragment">Interpolation of the value of point p, based on values of points a and b
+
+:param p: float, coordinate of the value to interpolate
+:param a: int, nearest inferior int
+:param b: int, nearest superior int
+:return interpolated value
+</pre> 
 </div>
 </div>
 <a class="anchor" id="ae8b9cc50ec3df7d226fb10c001ea0dcd"></a>
@@ -787,7 +810,11 @@ A new seed is generated for every noise</pre>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">This function is smoothing the white noise, by using a bilinear interpolation 
-for a better result</pre> 
+for a better result
+
+:param y: float coordinate to interpolate
+:param x: float coordinate to interpolate
+</pre> 
 </div>
 </div>
 <a class="anchor" id="a884ac5d0a8e8d0f22965249bf015acac"></a>
@@ -838,7 +865,12 @@ for a better result</pre>
         </tr>
       </table>
 </div><div class="memdoc">
-<pre class="fragment">Generate a white noise, based on a permutation table</pre> 
+<pre class="fragment">Generate a white noise, based on a permutation table
+
+:param dim: int, size of the 2D array
+:param perm: array, permutation table to generate pseudo-random number
+:return: the white noise matrix
+</pre> 
 </div>
 </div>
 <a class="anchor" id="a28818e090238155fc1a10caef50d7d91"></a>

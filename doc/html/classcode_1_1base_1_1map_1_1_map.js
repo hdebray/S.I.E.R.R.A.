@@ -15,7 +15,7 @@ var classcode_1_1base_1_1map_1_1_map =
     [ "headcount", "classcode_1_1base_1_1map_1_1_map.html#ac88a1bff594c533d31846d11c1984ce0", null ],
     [ "heightmap", "classcode_1_1base_1_1map_1_1_map.html#a07cc4c3de15bd25231c7ab7e5a78cff6", null ],
     [ "hemicycles", "classcode_1_1base_1_1map_1_1_map.html#a928f5323917220282ba9ecea6737f31d", null ],
-    [ "ini", "classcode_1_1base_1_1map_1_1_map.html#ad4051da9d9a590fef5a6dcdb502f5be1", null ],
+    [ "ini", "classcode_1_1base_1_1map_1_1_map.html#a7569b10ade3e92b5f2c0303437d42c4e", null ],
     [ "johnny", "classcode_1_1base_1_1map_1_1_map.html#aeb7e5785b14702a4ad62d577919467a7", null ],
     [ "lerp", "classcode_1_1base_1_1map_1_1_map.html#a5744d2b6f67686a904498ac97ceab90b", null ],
     [ "radius", "classcode_1_1base_1_1map_1_1_map.html#ae8b9cc50ec3df7d226fb10c001ea0dcd", null ],
