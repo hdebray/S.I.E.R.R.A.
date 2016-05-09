@@ -178,12 +178,13 @@ class Window(qtg.QWidget):
         
         #toggle wind
         self.wind = qtg.QCheckBox("Wind")
+        self.wind.setToolTip("Activate the wind for the simulation")
         self.wind.toggle()
         grid.addWidget(self.wind, 2,0, 1,3)
            
         #start the simulation
         self.start = qtg.QPushButton("START")
-        self.start.setToolTip('You must have Imagemagick installed on your computer')
+        self.start.setToolTip('Start the simulation')
         self.start.clicked.connect(self.solve)
         grid.addWidget(self.start, 1,6)
         
@@ -196,7 +197,8 @@ class Window(qtg.QWidget):
         #compile the images
         self.compile = qtg.QPushButton("Compile")
         self.compile.setDisabled(True)
-        self.compile.setToolTip('Compile the result into a GIF')
+        self.compile.setToolTip("Compile the result into a GIF \n"\
+                                "/!\ You must have Imagemagick installed on your computer")
         self.compile.clicked.connect(compile)
         grid.addWidget(self.compile, 2,6)
         
@@ -261,7 +263,7 @@ class Window(qtg.QWidget):
         if(self.default.isChecked()):
             self.frman.setValue( int(np.ceil(self.size.value()/3)) )
             self.fire.setValue( int(np.ceil(self.size.value()/50)) )
-            if(self.fire.value == 0): self.fire.setValue(1)
+        if(self.fire.value == 0): self.fire.setValue(1)
             
     def set_slider(self, value):
         """
