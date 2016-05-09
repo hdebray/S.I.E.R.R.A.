@@ -63,7 +63,9 @@ gus = frm.Fireman('Augustin',0,0)       #create a fireman
 #disp.draw(map,hide=False,name='constructed')
 
 
+
 if __name__=='__main__':
+    
     app = qtg.QApplication(sys.argv)
     sierra = disp.Window()
     sys.exit(app.exec_())

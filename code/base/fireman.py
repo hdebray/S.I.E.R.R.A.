@@ -18,13 +18,13 @@ def distance(x1,y1,x2,y2):
     
     Tests
     ---
-    >>>distance(0,0,0,0)
-    0
+    >>> distance(0,0,0,0)
+    0.0
     
-    >>>distance(0,1,0,0)
-    1
+    >>> distance(0,1,0,0)
+    1.0
     
-    >>>distance(0,0,1,1) == np.sqrt(2)
+    >>> distance(0,0,1,1) == np.sqrt(2)
     True
     """
     return np.sqrt((x1-x2)**2 + (y1-y2)**2)
@@ -47,7 +47,7 @@ class Fireman(object):
         
         Tests
         ---
-        >>>Fireman('john')
+        >>> Fireman('john')
         Traceback (most recent call last):
             ...
         TypeError: __init__() missing 2 required positional arguments: 'x' and 'y'

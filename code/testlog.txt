@@ -1,0 +1,106 @@
+27 items had no tests:
+    base.map
+    base.map.Map
+    base.map.Map.__init__
+    base.map.Map.biome
+    base.map.Map.calc_mat
+    base.map.Map.calc_noise
+    base.map.Map.call
+    base.map.Map.center
+    base.map.Map.clusters
+    base.map.Map.construct
+    base.map.Map.cordon
+    base.map.Map.create_fireman
+    base.map.Map.creation
+    base.map.Map.distrib
+    base.map.Map.headcount
+    base.map.Map.heightmap
+    base.map.Map.hemicycles
+    base.map.Map.ini
+    base.map.Map.johnny
+    base.map.Map.lerp
+    base.map.Map.radius
+    base.map.Map.save
+    base.map.Map.search
+    base.map.Map.smooth
+    base.map.Map.turn
+    base.map.Map.white_noise
+    base.map.Map.wrapping
+0 tests in 27 items.
+0 passed and 0 failed.
+Test passed.
+7 items had no tests:
+    base.cell
+    base.cell.Cell
+    base.cell.Cell.__init__
+    base.cell.Cell.__str__
+    base.cell.Cell.get_near
+    base.cell.Cell.in_fire
+    base.cell.Cell.propagation
+0 tests in 7 items.
+0 passed and 0 failed.
+Test passed.
+Trying:
+    Fireman('john')
+Expecting:
+    Traceback (most recent call last):
+        ...
+    TypeError: __init__() missing 2 required positional arguments: 'x' and 'y'
+ok
+Trying:
+    distance(0,0,0,0)
+Expecting:
+    0.0
+ok
+Trying:
+    distance(0,1,0,0)
+Expecting:
+    1.0
+ok
+Trying:
+    distance(0,0,1,1) == np.sqrt(2)
+Expecting:
+    True
+ok
+9 items had no tests:
+    base.fireman
+    base.fireman.Fireman
+    base.fireman.Fireman.__str__
+    base.fireman.Fireman.check_bounds
+    base.fireman.Fireman.go_to_fire
+    base.fireman.Fireman.movement
+    base.fireman.Fireman.put_out_fire
+    base.fireman.Fireman.search_fire
+    base.fireman.Fireman.update
+2 items passed all tests:
+   1 tests in base.fireman.Fireman.__init__
+   3 tests in base.fireman.distance
+4 tests in 11 items.
+4 passed and 0 failed.
+Test passed.
+13 items had no tests:
+    gui.display
+    gui.display.Window
+    gui.display.Window.__init__
+    gui.display.Window.center
+    gui.display.Window.change_img
+    gui.display.Window.initUI
+    gui.display.Window.set_default
+    gui.display.Window.set_max
+    gui.display.Window.set_slider
+    gui.display.Window.solve
+    gui.display.compile
+    gui.display.destroy
+    gui.display.draw
+0 tests in 13 items.
+0 passed and 0 failed.
+Test passed.
+5 items had no tests:
+    db.data
+    db.data.get_cell
+    db.data.get_fireman
+    db.data.reset
+    db.data.save_map
+0 tests in 5 items.
+0 passed and 0 failed.
+Test passed.
